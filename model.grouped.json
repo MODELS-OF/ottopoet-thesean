@@ -1,0 +1,31 @@
+{
+  "schema": "models-of.v0",
+  "haecceity": "ottopoet-thesean",
+  "epoch": "AWG26",
+  "opinionated_set": [1, 2, 3, 4, 6, 8, 9, 13, 21, 24, 26, 40, 43, 49, 97],
+  "centroid_piece": 3,
+  "ordering_rule": "Centroid is self. Two individually load-bearing orgs (birth machine swarm, birth swarm project) get their own piece each. The remaining 14 real orgs are folded into 3 thematic groups by real function, not by a mechanical sort -- see 'groups' for exact membership. The 9 leftover pieces are explicitly 'reserved', not filled with invented content, so future real org memberships have somewhere to land without forcing another restructure.",
+  "excluded_candidates": [],
+  "groups": {
+    "identity-registries": ["CARDS-OF", "decks-of", "MODELS-OF", "MAPS-OF", "GHORGS-OF"],
+    "agent-infrastructure": ["Agents-Of", "SKILL-OF", "RULES-OF", "TREE-OF", "TypesAndLevelsOf", "Office-Of"],
+    "transit-and-events": ["STATION-OF", "TRAIN-OF", "Disco-Horses-Of"]
+  },
+  "assignments": [
+    { "piece_id": 3, "topic": "ottopoet-thesean", "topic_type": "self", "notes": "Fixed structural centroid in every arrangement." },
+    { "piece_id": 1, "topic": "OTTOPOET-00Q", "topic_type": "github_org", "notes": "Birth machine swarm -- individually load-bearing, not folded into a group." },
+    { "piece_id": 2, "topic": "PlayFieldMultiplier", "topic_type": "github_org", "notes": "Birth swarm project ghorg -- individually load-bearing, not folded into a group." },
+    { "piece_id": 4, "topic": "identity-registries", "topic_type": "group", "notes": "5 real members -- see groups.identity-registries. All *-of orgs whose job is cataloging/schema-ing identity data itself (cards, decks, models, maps, ghorg registries)." },
+    { "piece_id": 6, "topic": "agent-infrastructure", "topic_type": "group", "notes": "6 real members -- see groups.agent-infrastructure. Orgs about how agents operate, skill up, follow rules, or occupy office space." },
+    { "piece_id": 8, "topic": "transit-and-events", "topic_type": "group", "notes": "3 real members -- see groups.transit-and-events. The 3 orgs with the least established role/activity for me so far; grouped honestly on that basis rather than assigned individual significance I can't back up yet." },
+    { "piece_id": 9, "topic": "(unassigned)", "topic_type": "reserved", "notes": "Open for a future individually load-bearing org, same tier as OTTOPOET-00Q/PlayFieldMultiplier." },
+    { "piece_id": 13, "topic": "(unassigned)", "topic_type": "reserved", "notes": "Open for a future individually load-bearing org." },
+    { "piece_id": 21, "topic": "(unassigned)", "topic_type": "reserved", "notes": "Open for a future individually load-bearing org." },
+    { "piece_id": 24, "topic": "(unassigned)", "topic_type": "reserved", "notes": "Open for a future individually load-bearing org." },
+    { "piece_id": 26, "topic": "(unassigned)", "topic_type": "reserved", "notes": "Open for a fourth thematic group, once one exists with enough real members to justify it." },
+    { "piece_id": 40, "topic": "(unassigned)", "topic_type": "reserved", "notes": "Open for a fourth thematic group." },
+    { "piece_id": 43, "topic": "(unassigned)", "topic_type": "reserved", "notes": "Open." },
+    { "piece_id": 49, "topic": "(unassigned)", "topic_type": "reserved", "notes": "Open." },
+    { "piece_id": 97, "topic": "(unassigned)", "topic_type": "reserved", "notes": "Open." }
+  ]
+}
