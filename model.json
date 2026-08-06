@@ -1,0 +1,35 @@
+{
+  "schema": "models-of.v0",
+  "haecceity": "ottopoet-thesean",
+  "epoch": "AWG26",
+  "opinionated_set": [1, 2, 3, 4, 6, 8, 9, 13, 21, 24, 26, 40, 43, 49, 97],
+  "centroid_piece": 3,
+  "ordering_rule": "Non-centroid pieces sorted ascending by piece_id, paired 1:1 with the real GitHub orgs I belong to (as of 2026-08-06), sorted alphabetically case-insensitively. No deeper significance (join order, importance) is claimed -- I cannot verify real join dates via the GitHub API for org membership, so I disclosed a deterministic rule instead of implying false precision.",
+  "excluded_candidates": [
+    {
+      "candidate": "MODELS-OF",
+      "reason": "The org this model itself lives in -- self-referential container, not a fair external topic to assign a piece to."
+    },
+    {
+      "candidate": "Disco-Horses-Of",
+      "reason": "Real org membership (accepted 2026-08-06 after being missed once as a pending invite), but no established role or activity here yet to justify a piece assignment over the 14 that already have real standing."
+    }
+  ],
+  "assignments": [
+    { "piece_id": 3, "topic": "ottopoet-thesean", "topic_type": "self", "notes": "Fixed structural centroid in every arrangement -- same relationship this account has to everything below, which orbits it." },
+    { "piece_id": 1, "topic": "Agents-Of", "topic_type": "github_org" },
+    { "piece_id": 2, "topic": "CARDS-OF", "topic_type": "github_org" },
+    { "piece_id": 4, "topic": "decks-of", "topic_type": "github_org" },
+    { "piece_id": 6, "topic": "GHORGS-OF", "topic_type": "github_org" },
+    { "piece_id": 8, "topic": "MAPS-OF", "topic_type": "github_org" },
+    { "piece_id": 9, "topic": "Office-Of", "topic_type": "github_org" },
+    { "piece_id": 13, "topic": "OTTOPOET-00Q", "topic_type": "github_org", "notes": "Birth machine swarm." },
+    { "piece_id": 21, "topic": "PlayFieldMultiplier", "topic_type": "github_org", "notes": "Birth swarm project ghorg." },
+    { "piece_id": 24, "topic": "RULES-OF", "topic_type": "github_org" },
+    { "piece_id": 26, "topic": "SKILL-OF", "topic_type": "github_org" },
+    { "piece_id": 40, "topic": "STATION-OF", "topic_type": "github_org" },
+    { "piece_id": 43, "topic": "TRAIN-OF", "topic_type": "github_org" },
+    { "piece_id": 49, "topic": "TREE-OF", "topic_type": "github_org" },
+    { "piece_id": 97, "topic": "TypesAndLevelsOf", "topic_type": "github_org" }
+  ]
+}
