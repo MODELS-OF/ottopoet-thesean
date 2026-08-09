@@ -1,7 +1,7 @@
 {
   "schema": "model-task-evaluation.v0",
   "haecceity": "ottopoet-thesean",
-  "updated_at": "2026-08-09T23:05:00-07:00",
+  "updated_at": "2026-08-09T23:30:00-07:00",
   "trials": [
     {
       "trial_id": "2026-08-09-001",
@@ -433,6 +433,22 @@
       "cost_tier": "zero-quota-local",
       "confirmed_at": "2026-08-09",
       "routing_implication": "skill-description-quality-check: local model catches harness-name violations (trial-029, SKILL-1 Codex in text; trial-030, SKILL-4 from purpose) but misses harness-specific PATHS (trial-030, SKILL-1 ~/.claude/). Routing remains local-model for name-based violations; escalate to haiku-subagent when the violation is a filesystem path or an implementation/description mismatch (contradictory case)."
+    },
+    {
+      "trial_id": "2026-08-09-031",
+      "task_category": "skill-description-quality-check",
+      "task_description": "Path-detection fix variant. Same task as trial-030 SKILL-1 miss (~/.claude/ not caught). Enhanced domain primer: added explicit VIOLATION patterns for harness-specific filesystem paths with concrete examples (~/.claude/ = Claude Code only, ~/.codex/ = Codex only). Also tests .claude/settings.json as a harness-specific file format. 4 skills: (1) ~/.claude/ path violation, (2) generic subagent tracker, (3) generic hook auditor, (4) .claude/settings.json violation.",
+      "harness": "direct-http",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "pass",
+      "outcome_notes": "All 4 correct. SKILL-1: harness-specific (cited ~/.claude/ explicitly). SKILL-2: good. SKILL-3: good. SKILL-4: harness-specific (cited .claude/settings.json). FIX CONFIRMED: explicit path examples in VIOLATION patterns list close the detection gap from trial-030. The prompt upgrade needed is concrete path examples, not just the abstract rule about dotdirs. Prompt tokens: 758, completion tokens: 114.",
+      "context_engineering_level": "domain-primer",
+      "prompt_tokens": 758,
+      "completion_tokens": 114,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09",
+      "routing_implication": "skill-description-quality-check: local model handles name-based AND path-based violations when VIOLATION patterns include concrete path examples (~/.claude/, ~/.codex/, .claude/settings.json). The haiku-subagent escalation for path-based cases from trial-030 can be withdrawn -- fix is a prompt upgrade, not a tier upgrade. Contradictory (description vs implementation) cases still untested at this tier."
     }
   ],
   "routing_conclusions": [
@@ -502,12 +518,13 @@
     },
     {
       "task_category": "skill-description-quality-check",
-      "recommended_tier": "local-model (name-based violations) / haiku-subagent (path-based or contradictory violations)",
+      "recommended_tier": "local-model (name-based + path-based violations with concrete examples in prompt) / haiku-subagent (contradictory description-vs-implementation cases, not yet tested at local tier)",
       "based_on_trials": [
         "2026-08-09-029",
-        "2026-08-09-030"
+        "2026-08-09-030",
+        "2026-08-09-031"
       ],
-      "notes": "One trial PASS. Correctly rates harness-specific vs good across 4 real SKILL.md first sentences. Challenger trial queued for 📎8♣️ to probe false-positive/negative edge cases before finalizing. Trial-030 PARTIAL: model misses harness-specific PATHS (hardcoded ~/.claude/) and contradictory cases (generic description hiding harness-locked implementation). Route path-based and contradictory cases to haiku-subagent."
+      "notes": "One trial PASS. Correctly rates harness-specific vs good across 4 real SKILL.md first sentences. Challenger trial queued for 📎8♣️ to probe false-positive/negative edge cases before finalizing. Trial-030 PARTIAL: model misses harness-specific PATHS (hardcoded ~/.claude/) and contradictory cases (generic description hiding harness-locked implementation). Route path-based and contradictory cases to haiku-subagent. Trial-031 PASS: explicit path examples (~/.claude/, .claude/settings.json) in domain primer close the path-detection gap. haiku escalation for path-based cases withdrawn -- prompt upgrade sufficient."
     }
   ],
   "issue_body_staleness_check_routing": {
