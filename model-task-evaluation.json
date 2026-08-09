@@ -30,6 +30,20 @@
       "latency_s": 12.18,
       "cost_tier": "zero-quota-local",
       "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-003",
+      "task_category": "routine-pr-merge-triage",
+      "task_description": "Binary routine/needs-attention classification (plus one-sentence reason) of a real merged PR title+body (pfm-wordpress#68), with a domain primer stating the classifier's actual job (triage, not code review) and the exact output format wanted.",
+      "harness": "opencode",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "pass",
+      "outcome_notes": "Correctly classified 'routine' with a sound one-sentence reason, matching my own actual judgment call on this exact real PR earlier the same session. Minor, non-fatal oddity: the harness made one unprompted Grep tool call mid-response (searching for the literal string 'needs-attention' in the working directory, 0 matches) before giving the final answer -- wasted a small amount of latency/tool-call budget but did not affect correctness. Worth watching whether this recurs on future trials; if so, may need a tighter system-prompt constraint (e.g. explicitly forbid tool use for a pure-classification task) rather than tolerating it as one-off noise.",
+      "context_engineering_level": "domain-primer",
+      "latency_s": null,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09"
     }
   ],
   "routing_conclusions": [
@@ -38,6 +52,12 @@
       "recommended_tier": "not-yet-enough-data",
       "based_on_trials": ["2026-08-09-001", "2026-08-09-002"],
       "notes": "Two trials, one A/B pair, is directional not conclusive. Real, non-speculative conclusion so far: for THIS task category, a domain-primer is not optional overhead -- it changes the outcome class (partial -> pass) more than switching models or harnesses likely would. Before ever concluding 'local-model can't handle this task category,' first confirm whether the actual failure was context_engineering_level=none rather than a genuine capability ceiling. Needs several more trials (different issue shapes, and ideally a comparable domain-primer-vs-none pair for a Haiku-subagent trial too) before this graduates past 'not-yet-enough-data.'"
+    },
+    {
+      "task_category": "routine-pr-merge-triage",
+      "recommended_tier": "local-model",
+      "based_on_trials": ["2026-08-09-003"],
+      "notes": "One trial, directional. First real success for this task category: this is close to the exact judgment I make many times per /loop tick already ('routine merge, no action needed') -- if this holds across more trials, this specific category is a strong, low-risk candidate to route to local-model as standing practice, freeing Sonnet-serial capacity for the ticks that actually need it. Needs several more trials (a real 'needs-attention' case, not just routine ones, to confirm it doesn't just default to 'routine' regardless of content) before treating this as settled."
     }
   ]
 }
