@@ -1,7 +1,7 @@
 {
   "schema": "model-task-evaluation.v0",
   "haecceity": "ottopoet-thesean",
-  "updated_at": "2026-08-08T22:35:00-07:00",
+  "updated_at": "2026-08-09T02:40:00-07:00",
   "trials": [
     {
       "trial_id": "2026-08-09-001",
@@ -100,6 +100,20 @@
       "latency_s": 12.66,
       "cost_tier": "anthropic-quota-cheap",
       "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-008",
+      "task_category": "routine-pr-merge-triage",
+      "task_description": "First none-context trial for this category (trials 003/004 both used the domain-primer) -- a real merged PR (Agents-Of/PlayFieldMultiplier#193, routine build-gating work), bare classifier prompt with no explanation of what 'routine' triage even means, closing the specific gap left after trial 007 (a none-vs-primer pair existed for issue-body-triage-summary but not for this category).",
+      "harness": "opencode",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "pass",
+      "outcome_notes": "Correctly classified 'routine' with a sound reason, with zero context primer -- unlike issue-body-triage-summary (where none-context genuinely failed, trial 001), this simpler binary classification task appears to tolerate a bare prompt fine. Emerging pattern worth tracking across more trials, not yet a firm conclusion: nuanced free-text summarization seems to need context-engineering much more than a binary classification task does, for this same model.",
+      "context_engineering_level": "none",
+      "latency_s": 17.16,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09"
     }
   ],
   "routing_conclusions": [
@@ -112,8 +126,8 @@
     {
       "task_category": "routine-pr-merge-triage",
       "recommended_tier": "local-model",
-      "based_on_trials": ["2026-08-09-003", "2026-08-09-004"],
-      "notes": "Two trials, one routine + one genuinely needs-attention, both correctly classified -- the specific confound trial 003 flagged (does it just default to 'routine' regardless of content?) is now directly addressed: it does not, it changed its answer correctly when the input actually warranted it. Still a small sample (2), and both used context_engineering_level=domain-primer, so this doesn't yet say anything about the none-context case for this category. Promoting from 'one trial, directional' but not yet calling this fully settled -- would want a few more needs-attention cases with different failure shapes (a security concern stated in-text, a merge conflict, a reverted change) before routing this category to local-model unsupervised in the standing /loop practice."
+      "based_on_trials": ["2026-08-09-003", "2026-08-09-004", "2026-08-09-008"],
+      "notes": "Three trials: one routine (domain-primer), one needs-attention (domain-primer), one routine (NO primer) -- all three correctly classified. Trial 008 closes the none-vs-primer gap this category was missing (unlike issue-body-triage-summary, where none-context genuinely failed). Emerging, not-yet-firm pattern: this category's binary classification seems to tolerate a bare prompt fine, while nuanced free-text summarization needed a primer to succeed at all -- plausible explanation is that 'routine vs needs-attention' is closer to the model's own pretraining distribution of natural judgment calls than a structured multi-point summary format is. Still want a none-context needs-attention trial (the one remaining empty cell in the 2x2: {routine,needs-attention} x {none,primer}) before calling this fully settled, and a few more needs-attention cases with different failure shapes (a security concern stated in-text, a merge conflict, a reverted change)."
     }
   ]
 }
