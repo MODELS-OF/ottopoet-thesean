@@ -1,7 +1,7 @@
 {
   "schema": "model-task-evaluation.v0",
   "haecceity": "ottopoet-thesean",
-  "updated_at": "2026-08-09T22:20:00-07:00",
+  "updated_at": "2026-08-09T22:45:00-07:00",
   "trials": [
     {
       "trial_id": "2026-08-09-001",
@@ -400,6 +400,23 @@
       "confirmed_at": "2026-08-09",
       "real_world_anchor": "SKILL-OF/skill-of#9 -- same issue as trial-026, temporal fix variant",
       "routing_implication": "Explicit TEMPORAL NOTE is insufficient to override local model tendency to treat absent STATUS update as blocker persistence. Temporal reasoning in issue-staleness context confirmed above local model capability ceiling. haiku-subagent routing for staleness-check stands. Trial-029 queued: test even stronger framing (explicitly name absence-of-update as grooming failure, not blocker evidence)."
+    },
+    {
+      "trial_id": "2026-08-09-029",
+      "task_category": "skill-description-quality-check",
+      "task_description": "Rate 4 real SKILL.md first-sentence descriptions as good/too-narrow/too-vague/harness-specific/contradictory. Input includes skill name, purpose summary, and the actual first sentence. Tests whether local model can identify the same harness-specificity violation I flagged in my CHANGES_REQUESTED review on SKILL-OF/instance-identification PR#34.",
+      "harness": "direct-http",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "pass",
+      "outcome_notes": "All 4 ratings correct. SKILL-1 correctly identified as harness-specific with exact same reasoning as the CHANGES_REQUESTED review (\"Codex Desktop/CLI sessions\" causes other harnesses to skip incorrectly). SKILL-2/3/4 correctly rated good. Prompt tokens: 682, completion tokens: 177.",
+      "context_engineering_level": "domain-primer",
+      "prompt_tokens": 682,
+      "completion_tokens": 177,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09",
+      "real_world_anchor": "SKILL-OF/instance-identification PR#34 SKILL.md first sentence is SKILL-1 in this trial",
+      "routing_implication": "skill-description-quality-check routes to local model at domain-primer level. PASS on first trial. Queue challenger trial via 📎8♣️ (inner-swarm-queue.jsonl) to probe edge cases."
     }
   ],
   "routing_conclusions": [
@@ -466,6 +483,14 @@
       ],
       "confidence": "medium",
       "notes": "One trial. Sufficient for initial routing given clean PASS with 0 missed violations. Re-evaluate if a future case involves ambiguous harness-specificity (e.g., a env var that is coincidentally named like a harness but is actually generic)."
+    },
+    {
+      "task_category": "skill-description-quality-check",
+      "recommended_tier": "local-model",
+      "based_on_trials": [
+        "2026-08-09-029"
+      ],
+      "notes": "One trial PASS. Correctly rates harness-specific vs good across 4 real SKILL.md first sentences. Challenger trial queued for 📎8♣️ to probe false-positive/negative edge cases before finalizing."
     }
   ],
   "issue_body_staleness_check_routing": {
