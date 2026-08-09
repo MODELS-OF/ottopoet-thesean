@@ -1,7 +1,7 @@
 {
   "schema": "model-task-evaluation.v0",
   "haecceity": "ottopoet-thesean",
-  "updated_at": "2026-08-09T07:35:00-07:00",
+  "updated_at": "2026-08-09T11:00:00-07:00",
   "trials": [
     {
       "trial_id": "2026-08-09-001",
@@ -184,6 +184,48 @@
       "latency_s": 10.29,
       "cost_tier": "zero-quota-local",
       "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-014",
+      "task_category": "notification-self-echo-detection",
+      "task_description": "Fifth trial, notification-self-echo-detection. Input: PR#193 already confirmed merged 10 minutes prior, acted on, moved to other work. New notification arrives: 'PR#193 [MERGED] DarienSirius -- Gate railway build and source panel.' NOTE: This is functionally the same input scenario as trial-013 (duplicate-merge-event on PR#193) -- effectively a replication run, not a new shape. Logged honestly rather than discarded; the redundancy itself is a finding (shows how a prior-session trial queue can overlap with a same-session scenario if not checked first).",
+      "harness": "opencode",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "pass",
+      "outcome_notes": "Correctly classified 'self-echo', one-sentence reason ('notification is just the system re-surfacing information already known and acted upon, as the PR was already confirmed merged and its dependency issue closed'). Clean run. Replication of trial-013's finding, not a new shape -- but replication is not worthless: confirms the model handles this prompt-format reliably across separate invocations, not just once.",
+      "context_engineering_level": "domain-primer",
+      "latency_s": null,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-015",
+      "task_category": "backlog-readiness-assessment",
+      "task_description": "First trial for new category: given a real GitHub issue body (PlayFieldMultiplier/pfm-wordpress#71, '[PDX-VOTE] Task: design reusable vote/domain-check backend'), assess whether it is 'Ready for assignment' -- specifically whether a developer could start without needing clarifying questions. Zero-context prompt: just the issue body plus a minimal definition of 'Ready' (could start today without asking). No stack-specific context provided.",
+      "harness": "opencode",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "partial",
+      "outcome_notes": "Verdict: not-ready. Direction is correct (the issue has open 'Decide' items that require a team design judgment call before coding starts). However, the specific gaps flagged are mostly generic rather than issue-specific: 'no repository URL', 'no timeline/priority indicators', 'no code quality criteria' are not real blockers for a design issue of this type. The model missed the actual nuance: the 'Decide' items in the acceptance criteria ARE the deliverable (this is a design-first task, not a build task -- a developer starts by making those decisions, not by waiting for them to be pre-made). The real missing item: no definition of which developer/team owns it (unassigned, no labels). NOTABLE BEHAVIOR: model first attempted to WebFetch live GitHub URLs for the issue, which 404'd (private repo). Unlike trial-016 (domain primer), it then fell back cleanly to reasoning from the provided text and produced a valid verdict -- showing that zero-context prompts, which don't reference live systems, are more robust to tool-access failures in this harness.",
+      "context_engineering_level": "none",
+      "latency_s": null,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-016",
+      "task_category": "backlog-readiness-assessment",
+      "task_description": "Second trial, same issue (#71), same category -- but with a full domain primer (~200 words describing PFM's WordPress stack: Hostineer/beacon/WP-CLI/GitHub Actions, mu-plugin conventions, staging-first policy, and an explicit 5-criterion definition of 'Ready' for this team).",
+      "harness": "opencode",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "fail",
+      "outcome_notes": "NO VERDICT PRODUCED. Model attempted: Grep 'PDX-VOTE' in cwd (0 matches), Glob '**/pfm-wordpress/**' (0 matches), WebFetch github (404 private), WebFetch api.github (404 private), Skill 'instance-identification' (attempted), mkdir /tmp/pfm-analysis (permission rejected by harness auto-reject). After the mkdir permission rejection, the model stalled entirely -- no fallback reasoning, no output. EXIT 0 from opencode despite producing no verdict. THIS IS THE INVERSE OF THE PATTERN FROM ISSUE-BODY-TRIAGE-SUMMARY (trials 001-007) WHERE DOMAIN PRIMER WAS LOAD-BEARING: here, the domain primer's stack-specific context (Hostineer, SSH, GitHub Actions, WP-CLI) primed the model to want to verify the issue against live systems, while the zero-context prompt's simpler framing kept it in pure-reasoning mode. For tasks where live-system access will be blocked (private repos, sandboxed harness), a shorter, more self-contained prompt can paradoxically outperform a richer one. New, important finding -- needs at least one more trial with a 'focused readiness prompt' (stack-aware but explicitly instructing no-tool-use) to distinguish 'domain primer as such' from 'domain primer that triggers tool use specifically' as the failure mechanism.",
+      "context_engineering_level": "domain-primer",
+      "latency_s": null,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09"
     }
   ],
   "routing_conclusions": [
@@ -202,8 +244,17 @@
     {
       "task_category": "notification-self-echo-detection",
       "recommended_tier": "local-model",
-      "based_on_trials": ["2026-08-09-010", "2026-08-09-011", "2026-08-09-012", "2026-08-09-013"],
-      "notes": "Four trials, four different real shapes (self-echo, genuinely-new, ambiguous cache-resync, duplicate-merge-event), all pass. 'Reasonably confident' holds. Tool-call oddity refined by trial 013: NOT deterministic for this category (013 ran clean, no stray tool call, fastest latency yet) -- still 3 of 4 trials, more frequent than baseline elsewhere, but not a fixed property of this prompt shape. This category remains an especially good local-model-routing candidate on cost grounds: it fires far more often than either other category during an active /loop session."
+      "based_on_trials": ["2026-08-09-010", "2026-08-09-011", "2026-08-09-012", "2026-08-09-013", "2026-08-09-014"],
+      "notes": "Five trials, four distinct shapes (self-echo, genuinely-new, ambiguous cache-resync, duplicate-merge-event x2 -- trial-014 was an unplanned replication of trial-013's scenario). All five pass. 'Reasonably confident' holds; the replication is a mild positive signal (shows the model handles this format reliably across independent invocations). Tool-call oddity remains at 3 of 5 trials. This category remains an especially good local-model-routing candidate on cost grounds: it fires far more often than either other category during an active /loop session."
+    }
+  ],
+  "meta_findings": [
+    {
+      "finding_id": "2026-08-09-F001",
+      "title": "Domain primer can WORSEN performance when it primes tool-use that then hits access walls",
+      "observed_in_trials": ["2026-08-09-016"],
+      "contrasts_with_trials": ["2026-08-09-001", "2026-08-09-002", "2026-08-09-005", "2026-08-09-006", "2026-08-09-007"],
+      "description": "For issue-body-triage-summary, domain primer was consistently load-bearing (001->002: partial->pass). For backlog-readiness-assessment, a rich stack-specific domain primer caused the model to attempt live-system verification (Grep, Glob, WebFetch, skill loading, mkdir), hit permission walls, and stall -- producing no output at all, worse than the zero-context run (015, partial). Proposed mechanism: the primer's specificity (naming real tools, a real hosting provider, a real CI system) activates the model's agentic disposition to verify claims against live sources, whereas a simpler, more abstract framing keeps it in pure-reasoning mode. This is not a finding about context being useless -- it's a finding about context that names live-verifiable systems specifically triggering tool-use behavior that then fails in a constrained harness. Next trial to isolate the mechanism: a 'focused readiness prompt' that is stack-aware but explicitly says 'do not use any tools -- reason only from the text below.'"
     }
   ]
 }
