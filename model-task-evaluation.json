@@ -1,7 +1,7 @@
 {
   "schema": "model-task-evaluation.v0",
   "haecceity": "ottopoet-thesean",
-  "updated_at": "2026-08-08T22:00:00-07:00",
+  "updated_at": "2026-08-08T22:35:00-07:00",
   "trials": [
     {
       "trial_id": "2026-08-09-001",
@@ -72,14 +72,42 @@
       "latency_s": 10.82,
       "cost_tier": "zero-quota-local",
       "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-006",
+      "task_category": "issue-body-triage-summary",
+      "task_description": "First real Haiku-subagent data point for this category -- same exact issue as trial 005 (pfm-org#95), bare/none-context prompt (no domain primer, matching trial 001's setup), dispatched via the Agent tool (model: haiku, run_in_background: false, general-purpose subagent).",
+      "harness": "claude-agent-sdk-subagent",
+      "model_tier": "haiku-subagent",
+      "model_id": "claude-haiku-4-5",
+      "outcome": "partial",
+      "outcome_notes": "Correctly identified BOTH distinct problems (masking bug + idempotency/re-run gap) even with zero context primer -- notably stronger bare-context baseline than the local model showed on its own none-context trial (001, different issue). Graded 'partial' rather than 'pass' on the same strict criterion used for local-model trials: stated the required fix ('requires replacing the custom migration loop with Drizzle's...') without explicitly flagging that this is proposed-and-awaiting-a-decision rather than already-decided/shipped -- a PM skimming could reasonably read it as the agreed fix rather than an open question. See trial 007 for the domain-primer pair on the identical issue.",
+      "context_engineering_level": "none",
+      "latency_s": 8.19,
+      "cost_tier": "anthropic-quota-cheap",
+      "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-007",
+      "task_category": "issue-body-triage-summary",
+      "task_description": "Same issue and harness as trial 006, but with the identical domain primer used in trial 005 (state what a good summary MUST capture, name what omitting would make misleading) -- completes the none-vs-primer A/B pair for Haiku-subagent on this category, mirroring trials 001/002's local-model A/B design.",
+      "harness": "claude-agent-sdk-subagent",
+      "model_tier": "haiku-subagent",
+      "model_id": "claude-haiku-4-5",
+      "outcome": "pass",
+      "outcome_notes": "Clean pass: explicitly named both distinct problems with precise language ('fail silently without any detection' for the idempotency gap) AND explicitly stated it requires 'an architectural fix... not quick patches that would trade one failure mode for another' -- unambiguously conveys the 'awaiting a decision, not shipped' framing trial 006 was graded down for missing. Real comparative finding: the primer's effect on Haiku (partial -> pass, closing one specific named gap) is real but much smaller in magnitude than its effect on the local model (001 -> 002, which went from missing the single most load-bearing fact entirely to a near-complete pass) -- consistent with Haiku having a stronger bare-context baseline to begin with. This is the first real cross-tier context_engineering_level comparison this evaluation practice has produced.",
+      "context_engineering_level": "domain-primer",
+      "latency_s": 12.66,
+      "cost_tier": "anthropic-quota-cheap",
+      "confirmed_at": "2026-08-09"
     }
   ],
   "routing_conclusions": [
     {
       "task_category": "issue-body-triage-summary",
       "recommended_tier": "local-model-with-domain-primer",
-      "based_on_trials": ["2026-08-09-001", "2026-08-09-002", "2026-08-09-005"],
-      "notes": "Promoted from 'not-yet-enough-data': trial 005 confirms the domain-primer effect isn't a one-issue fluke -- a genuinely different, denser two-part issue was also summarized correctly (both distinct problems named, correctly flagged as awaiting a decision rather than a quick fix) with the same primer discipline (state what MUST be captured, name what omitting would make misleading). Still only local-model tested -- no comparable Haiku-subagent domain-primer-vs-none pair exists yet, so this says 'local-model, with a domain primer, works for this category' but not yet 'local-model beats or matches Haiku-subagent for this category.' The qualifier in the recommended_tier is deliberate: context_engineering_level=none should not be assumed safe for this category based on trial 001's single none-context failure -- always pair with a primer."
+      "based_on_trials": ["2026-08-09-001", "2026-08-09-002", "2026-08-09-005", "2026-08-09-006", "2026-08-09-007"],
+      "notes": "The missing Haiku-subagent comparison now exists (006/007, same issue as 005). Real finding: Haiku's bare/none-context baseline (006, partial) is noticeably stronger than the local model's was (001, partial-but-worse -- missed the single most load-bearing fact entirely; 006 got both core problems, just not the 'awaiting decision' framing), and the domain-primer's effect on Haiku (006->007) is real but smaller in magnitude than on the local model (001->002). Net routing conclusion, still local-model-with-domain-primer for cost reasons: once a domain primer is supplied either way, local-model (zero quota) and Haiku-subagent (cheap quota) both reach 'pass' on this category -- so for a task this cheap to prime correctly, prefer local-model first and only escalate to Haiku-subagent if a specific issue shape turns out to need more inference quality than the local model can deliver even with a good primer (not yet observed). Sample size still small (2-3 per tier) -- keep adding different issue shapes before treating this as fully settled."
     },
     {
       "task_category": "routine-pr-merge-triage",
