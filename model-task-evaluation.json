@@ -1,7 +1,7 @@
 {
   "schema": "model-task-evaluation.v0",
   "haecceity": "ottopoet-thesean",
-  "updated_at": "2026-08-09T11:35:00-07:00",
+  "updated_at": "2026-08-09T12:00:00-07:00",
   "trials": [
     {
       "trial_id": "2026-08-09-001",
@@ -240,6 +240,20 @@
       "latency_s": null,
       "cost_tier": "zero-quota-local",
       "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-018",
+      "task_category": "backlog-readiness-assessment",
+      "task_description": "Fourth trial. Same prompt format as trial-017 (domain-primer + explicit no-tool-use). Different issue: pfm-wordpress#70 '[PDX-VOTE] Task: seed staging Tech page and announcement for naming vote' -- chosen specifically because it is a concrete implementation task (create a WP page + post with specified content) rather than a design-first task like #71. Purpose: check for false-negative bias (does the model always say not-ready regardless of content?).",
+      "harness": "opencode",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "pass",
+      "outcome_notes": "VERDICT: ready. Correct -- this issue IS more ready than #71. Model correctly identified all specific, testable AC items (page creation, announcement post, copy requirements, candidate names, domain availability signals, comments-off, no-overwrite guard). No false-negative bias: the model correctly distinguishes 'concrete implementation task' (ready) from 'design-first task with open decisions' (not-ready, trials 015/017). One real miss not flagged: 'Include the six candidate names from the second captains meeting' -- the names are not in the issue body; a developer would need to find them from meeting notes. However 'ready' is still the correct verdict since that's a lookup, not a design decision. Minor format oddity: listed 'No blocking dependencies mentioned' under WHAT_IS_MISSING (absence of blockers is a positive signal, not a gap). Non-fatal. Overall: domain-primer-no-tool-use prompt format works correctly across two distinct issue shapes without false-negative bias.",
+      "context_engineering_level": "domain-primer-no-tool-use",
+      "latency_s": null,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09"
     }
   ],
   "routing_conclusions": [
@@ -264,8 +278,8 @@
     {
       "task_category": "backlog-readiness-assessment",
       "recommended_tier": "local-model-with-domain-primer-no-tool-use",
-      "based_on_trials": ["2026-08-09-015", "2026-08-09-016", "2026-08-09-017"],
-      "notes": "Three trials, one issue (#71), three prompt variants. Results: zero-context=partial (015, found direction but flagged generic non-issues), domain-primer-unconstrained=fail (016, stalled entirely on tool-access walls), domain-primer-with-no-tool-use-constraint=pass (017, found the real blockers, concrete action). Clear verdict: use domain-primer-with-no-tool-use for this category in sandboxed/private-resource harnesses. Standing practice: all backlog-readiness-assessment prompts get both the domain primer AND an explicit 'do not use any tools -- reason only from the text below' instruction. Sample size: thin (one issue, three variants). Next useful trials: (a) a different issue shape (an OPEN design issue that IS ready -- to test for false-negative bias), (b) a non-WordPress PFM issue to check primer generalizability."
+      "based_on_trials": ["2026-08-09-015", "2026-08-09-016", "2026-08-09-017", "2026-08-09-018"],
+      "notes": "Four trials, two issues (#71 design-first, #70 concrete implementation), three prompt variants. Results: zero-context=partial (015), domain-primer-unconstrained=fail (016), domain-primer-with-no-tool-use=pass (017, 018). No false-negative bias: the model correctly said 'ready' for #70 and 'not-ready' for #71, distinguishing concrete implementation tasks from design-first tasks with open decisions. Standing practice confirmed: domain-primer-no-tool-use is the correct format for this category in sandboxed harnesses. Next useful trials: (a) a non-WordPress PFM issue to check primer generalizability, (b) a 'needs-discussion' case (an issue where the blocker is a genuine human judgment call, not just an implementation decision)."
     }
   ],
   "meta_findings": [
