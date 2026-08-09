@@ -1,7 +1,7 @@
 {
   "schema": "model-task-evaluation.v0",
   "haecceity": "ottopoet-thesean",
-  "updated_at": "2026-08-09T13:00:00-07:00",
+  "updated_at": "2026-08-09T13:45:00-07:00",
   "trials": [
     {
       "trial_id": "2026-08-09-001",
@@ -282,6 +282,62 @@
       "latency_s": null,
       "cost_tier": "zero-quota-local",
       "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-021",
+      "task_category": "issue-body-staleness-check",
+      "task_description": "First trial for new category. Input: pfm-webops#32 body (STATUS section says '#99 is the remaining gap') + 3 comments (Comment 3 says '#99 is now resolved'). Zero-context prompt: minimal definition of current/partially-stale/stale, no explicit detection strategy. Correct answer: partially-stale (body claims #99 is open; Comment 3 closes it).",
+      "harness": "opencode",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "fail",
+      "outcome_notes": "VERDICT: current (WRONG -- should be partially-stale). Model missed the direct contradiction between body's '#99 is the remaining gap' and Comment 3's '#99 is now resolved.' Produced duplicate output block (OpenCode formatting artifact). Zero tool calls.",
+      "context_engineering_level": "none",
+      "latency_s": null,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-022",
+      "task_category": "issue-body-staleness-check",
+      "task_description": "Second trial, same issue/comments. Added explicit 3-step HOW_TO_ASSESS_STALENESS strategy: (1) identify open claims in body, (2) check each against comments, (3) verdict. Also added no-tool-use instruction.",
+      "harness": "opencode",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "fail",
+      "outcome_notes": "VERDICT: current (WRONG again). Model ignored the 3-step HOW_TO_ASSESS_STALENESS instructions entirely -- did a gestalt read and produced the same wrong verdict. Duplicate output again. The explicit strategy prompt had zero effect.",
+      "context_engineering_level": "domain-primer-no-tool-use",
+      "latency_s": null,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-023",
+      "task_category": "issue-body-staleness-check",
+      "task_description": "Third trial. Chain-of-thought scaffolding: explicitly required model to output STEP 1 (copy open claims from body) and STEP 2 (check each against comments) before giving final verdict. Same issue/comments.",
+      "harness": "opencode",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "fail",
+      "outcome_notes": "VERDICT: current (WRONG). REMARKABLE: Model correctly completed Step 1 (found 'One real gap remains... #99... doesn't exist yet') and Step 2 ('This gap was resolved by comment 3'). Then drew the WRONG conclusion in Step 3 -- said current with no stale claims despite having just correctly identified the gap as resolved. This is a pure 'last-mile reasoning failure': the model produced correct intermediate evidence and drew the wrong conclusion from it. The model seems to interpret 'resolved by comment' as 'confirmed by comment' rather than 'superseded by comment.'",
+      "context_engineering_level": "chain-of-thought",
+      "latency_s": null,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-024",
+      "task_category": "issue-body-staleness-check",
+      "task_description": "Fourth trial. Hard logical constraint added to Step 3: 'RULE: if Step 2 shows ANY item as RESOLVED, the body is stale.' Also simplified the body text (removed some context to reduce distraction). Same issue/comments.",
+      "harness": "opencode",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "fail",
+      "outcome_notes": "NO VERDICT PRODUCED. Model attempted Grep for '^## STATUS' in opencode temp directory (the markdown header in the simplified body text triggered file-search behavior). Permission rejected by harness. Stalled with no output. Same F001 pattern despite 'do not use any tools' instruction at top of prompt -- the instruction is not universally reliable for this model, especially when markdown section headers are present in the body text.",
+      "context_engineering_level": "chain-of-thought-hard-rule",
+      "latency_s": null,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09"
     }
   ],
   "routing_conclusions": [
@@ -307,9 +363,15 @@
       "task_category": "backlog-readiness-assessment",
       "recommended_tier": "local-model-with-domain-primer-no-tool-use",
       "based_on_trials": ["2026-08-09-015", "2026-08-09-016", "2026-08-09-017", "2026-08-09-018", "2026-08-09-019", "2026-08-09-020"],
-      "notes": "Six trials, three issues, three domains. PROMPT NOW STABLE across coding tasks AND governance/approval issues. Refined prompt (trial-020) adds: (1) explicit ISSUE_TYPE output field (coding-task | governance-approval), (2) expanded needs-discussion definition covering 'it IS the governance/approval action, no code expected.' Both refinements validated: trial-020 correctly classified pfm-agent-ops#13 as governance-approval / needs-discussion where trial-019 had called it not-ready. Standing prompt template: domain-primer-no-tool-use-refined (trial-020 version). Next useful trials: (a) a second governance-approval issue to confirm the refined prompt generalizes, (b) a different non-PFM-WordPress coding task for the refined prompt, (c) begin exploring a genuinely new task category. Call count: 20 (trials 001-020)."
+      "notes": "Six trials (015-020), three issues, three domains. PROMPT NOW STABLE across coding tasks AND governance/approval issues. Refined prompt (trial-020) adds: (1) explicit ISSUE_TYPE output field (coding-task | governance-approval), (2) expanded needs-discussion definition covering 'it IS the governance/approval action, no code expected.' Both refinements validated: trial-020 correctly classified pfm-agent-ops#13 as governance-approval / needs-discussion where trial-019 had called it not-ready. Standing prompt template: domain-primer-no-tool-use-refined (trial-020 version). Next useful trials: (a) a second governance-approval issue to confirm the refined prompt generalizes, (b) a different non-PFM-WordPress coding task for the refined prompt, (c) begin exploring a genuinely new task category. Call count: 20 (trials 001-020)."
     }
   ],
+  "issue_body_staleness_check_routing": {
+    "task_category": "issue-body-staleness-check",
+    "recommended_tier": "haiku-subagent-or-sonnet",
+    "based_on_trials": ["2026-08-09-021", "2026-08-09-022", "2026-08-09-023", "2026-08-09-024"],
+    "notes": "Four consecutive failures on the same input (pfm-webops#32, body claims #99 open, Comment 3 resolves it). Failure modes: (1) gestalt read ignoring prompt structure (021, 022), (2) correct intermediate reasoning but wrong conclusion -- 'last-mile reasoning failure' (023), (3) tool-use stall on markdown header triggering Grep attempt (024). The task requires: identify open claims in body, compare against comments, correctly conclude body is stale if any claim is resolved. The model can do step 1 and 2 separately but cannot reliably connect them to a correct verdict. This is a genuine capability ceiling for Qwen3-Coder-30B at this task type, not a prompt-engineering problem (4 different approaches all failed). ROUTE TO: haiku-subagent (much cheaper than Sonnet, but likely capable of this simpler comparative-reasoning task). Do not invest more local-model trials on this category without a fundamentally different approach (e.g., a custom multi-turn conversation rather than single-prompt)."
+  },
   "meta_findings": [
     {
       "finding_id": "2026-08-09-F001",
