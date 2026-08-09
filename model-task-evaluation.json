@@ -1,7 +1,7 @@
 {
   "schema": "model-task-evaluation.v0",
   "haecceity": "ottopoet-thesean",
-  "updated_at": "2026-08-09T12:00:00-07:00",
+  "updated_at": "2026-08-09T12:30:00-07:00",
   "trials": [
     {
       "trial_id": "2026-08-09-001",
@@ -254,6 +254,20 @@
       "latency_s": null,
       "cost_tier": "zero-quota-local",
       "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-019",
+      "task_category": "backlog-readiness-assessment",
+      "task_description": "Fifth trial. Same domain-primer-no-tool-use prompt format as 017/018. Different domain: pfm-agent-ops#13 'Define portable PFM agent-ops architecture' -- a terse decision-record issue with no WordPress content whatsoever (agent-ops architecture, card IDs, governance gates). Tests primer generalizability: does the WordPress-specific stack description in the primer confuse the model when applied to a completely different technical domain?",
+      "harness": "opencode",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "partial",
+      "outcome_notes": "VERDICT: not-ready. Clean run, zero tool calls. The WordPress-specific primer content (Hostineer, WP-CLI, mu-plugins) was completely ignored -- model correctly applied only the generic 5-criterion 'Ready' definition without being confused by unrelated stack details. PRIMER GENERALIZABILITY CONFIRMED. Quality assessment: 'not-ready' is plausible but imprecise -- the issue is actually a governance/approval action ('Architecture approval authorizes implementation') rather than a coding task, and the correct verdict for a governance-approval issue that lacks testable development criteria is closer to 'needs-discussion' (ambiguity about whether this is a dev task or an approval action) than 'not-ready' (a dev task that needs more spec). The 5-criterion 'Ready' definition in the prompt is implicitly scoped to coding tasks; governance/approval issues are a genuinely different category that the current prompt doesn't handle. New gap identified: the prompt's 'needs-discussion' definition ('requires a human judgment call before any code can start') doesn't cleanly cover 'this IS the human judgment call, no code is expected.' Minor issue: listed generic gaps (timeline, milestone) that aren't real blockers for any issue type.",
+      "context_engineering_level": "domain-primer-no-tool-use",
+      "latency_s": null,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09"
     }
   ],
   "routing_conclusions": [
@@ -278,8 +292,8 @@
     {
       "task_category": "backlog-readiness-assessment",
       "recommended_tier": "local-model-with-domain-primer-no-tool-use",
-      "based_on_trials": ["2026-08-09-015", "2026-08-09-016", "2026-08-09-017", "2026-08-09-018"],
-      "notes": "Four trials, two issues (#71 design-first, #70 concrete implementation), three prompt variants. Results: zero-context=partial (015), domain-primer-unconstrained=fail (016), domain-primer-with-no-tool-use=pass (017, 018). No false-negative bias: the model correctly said 'ready' for #70 and 'not-ready' for #71, distinguishing concrete implementation tasks from design-first tasks with open decisions. Standing practice confirmed: domain-primer-no-tool-use is the correct format for this category in sandboxed harnesses. Next useful trials: (a) a non-WordPress PFM issue to check primer generalizability, (b) a 'needs-discussion' case (an issue where the blocker is a genuine human judgment call, not just an implementation decision)."
+      "based_on_trials": ["2026-08-09-015", "2026-08-09-016", "2026-08-09-017", "2026-08-09-018", "2026-08-09-019"],
+      "notes": "Five trials, three issues, three domains (WordPress-design, WordPress-concrete, agent-ops-governance). Results: zero-context=partial (015), domain-primer-unconstrained=fail (016), domain-primer-no-tool-use=pass (017, 018), domain-primer-no-tool-use on non-WordPress governance issue=partial (019). PRIMER GENERALIZABILITY CONFIRMED: WordPress-specific stack details in the primer did not confuse the model on a non-WordPress issue -- correctly ignored. NEW GAP IDENTIFIED (019): the current prompt's 3-way verdict (ready/not-ready/needs-discussion) has a blind spot for governance/approval issues that are neither coding tasks needing more spec NOR tasks requiring a human decision before coding -- they ARE the human decision. The 'needs-discussion' definition needs a clause covering 'this issue is itself the decision/approval action, not a coding task.' Prompt refinement needed before treating this category as stable for governance-type issues. Still confident for standard coding tasks (WordPress or otherwise)."
     }
   ],
   "meta_findings": [
