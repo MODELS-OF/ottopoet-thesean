@@ -1,7 +1,7 @@
 {
   "schema": "model-task-evaluation.v0",
   "haecceity": "ottopoet-thesean",
-  "updated_at": "2026-08-09T11:00:00-07:00",
+  "updated_at": "2026-08-09T11:35:00-07:00",
   "trials": [
     {
       "trial_id": "2026-08-09-001",
@@ -226,6 +226,20 @@
       "latency_s": null,
       "cost_tier": "zero-quota-local",
       "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-017",
+      "task_category": "backlog-readiness-assessment",
+      "task_description": "Third trial, same issue (#71). Same domain primer as trial-016 (PFM WordPress stack, Hostineer/beacon/WP-CLI/GitHub Actions, mu-plugin conventions, staging-first, 5-criterion Ready definition) BUT with an explicit 'IMPORTANT: Do not use any tools. Do not attempt to fetch URLs, search files, or run commands. Reason only from the text provided below.' instruction prepended. Designed to isolate meta-finding F001's mechanism: does the failure stem from the primer content, or from the primer triggering tool-use disposition when no constraint is present?",
+      "harness": "opencode",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "pass",
+      "outcome_notes": "VERDICT: not-ready. Clean run -- zero tool calls attempted despite the domain primer naming live-verifiable systems (Hostineer, GitHub Actions, WP-CLI). The explicit constraint resolved the stall that caused trial-016 to fail entirely. Quality is meaningfully better than trial-015 (zero context, partial): correctly identified the real blockers ('Decide whether this is implemented as...' items in the AC mean the implementation approach is genuinely undecided, which IS a developer-blocker) rather than generic complaints ('no timeline', 'no code quality criteria'). RECOMMENDED_ACTION was concrete and actionable. META-FINDING F001 MECHANISM CONFIRMED: the failure in trial-016 was NOT caused by the domain primer's content itself, but by the combination of (a) the primer naming live-verifiable systems + (b) the absence of an explicit no-tool-use constraint. With the constraint present, the primer's domain knowledge HELPS (better quality than zero-context). Practical implication: all future domain-primer prompts for private/sandboxed contexts should include an explicit no-tool-use instruction.",
+      "context_engineering_level": "domain-primer-no-tool-use",
+      "latency_s": null,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09"
     }
   ],
   "routing_conclusions": [
@@ -246,6 +260,12 @@
       "recommended_tier": "local-model",
       "based_on_trials": ["2026-08-09-010", "2026-08-09-011", "2026-08-09-012", "2026-08-09-013", "2026-08-09-014"],
       "notes": "Five trials, four distinct shapes (self-echo, genuinely-new, ambiguous cache-resync, duplicate-merge-event x2 -- trial-014 was an unplanned replication of trial-013's scenario). All five pass. 'Reasonably confident' holds; the replication is a mild positive signal (shows the model handles this format reliably across independent invocations). Tool-call oddity remains at 3 of 5 trials. This category remains an especially good local-model-routing candidate on cost grounds: it fires far more often than either other category during an active /loop session."
+    },
+    {
+      "task_category": "backlog-readiness-assessment",
+      "recommended_tier": "local-model-with-domain-primer-no-tool-use",
+      "based_on_trials": ["2026-08-09-015", "2026-08-09-016", "2026-08-09-017"],
+      "notes": "Three trials, one issue (#71), three prompt variants. Results: zero-context=partial (015, found direction but flagged generic non-issues), domain-primer-unconstrained=fail (016, stalled entirely on tool-access walls), domain-primer-with-no-tool-use-constraint=pass (017, found the real blockers, concrete action). Clear verdict: use domain-primer-with-no-tool-use for this category in sandboxed/private-resource harnesses. Standing practice: all backlog-readiness-assessment prompts get both the domain primer AND an explicit 'do not use any tools -- reason only from the text below' instruction. Sample size: thin (one issue, three variants). Next useful trials: (a) a different issue shape (an OPEN design issue that IS ready -- to test for false-negative bias), (b) a non-WordPress PFM issue to check primer generalizability."
     }
   ],
   "meta_findings": [
@@ -254,7 +274,7 @@
       "title": "Domain primer can WORSEN performance when it primes tool-use that then hits access walls",
       "observed_in_trials": ["2026-08-09-016"],
       "contrasts_with_trials": ["2026-08-09-001", "2026-08-09-002", "2026-08-09-005", "2026-08-09-006", "2026-08-09-007"],
-      "description": "For issue-body-triage-summary, domain primer was consistently load-bearing (001->002: partial->pass). For backlog-readiness-assessment, a rich stack-specific domain primer caused the model to attempt live-system verification (Grep, Glob, WebFetch, skill loading, mkdir), hit permission walls, and stall -- producing no output at all, worse than the zero-context run (015, partial). Proposed mechanism: the primer's specificity (naming real tools, a real hosting provider, a real CI system) activates the model's agentic disposition to verify claims against live sources, whereas a simpler, more abstract framing keeps it in pure-reasoning mode. This is not a finding about context being useless -- it's a finding about context that names live-verifiable systems specifically triggering tool-use behavior that then fails in a constrained harness. Next trial to isolate the mechanism: a 'focused readiness prompt' that is stack-aware but explicitly says 'do not use any tools -- reason only from the text below.'"
+      "description": "For issue-body-triage-summary, domain primer was consistently load-bearing (001->002: partial->pass). For backlog-readiness-assessment, a rich stack-specific domain primer WITHOUT a no-tool-use constraint (016) caused the model to attempt live-system verification (Grep, Glob, WebFetch, skill loading, mkdir), hit permission walls, and stall -- producing no output, worse than the zero-context run (015, partial). MECHANISM NOW CONFIRMED via trial-017: same domain primer + explicit 'do not use any tools -- reason only from the text below' instruction → clean run, zero tool calls, pass-quality verdict. The failure was NOT the primer content itself but the combination of (primer naming live-verifiable systems) + (absence of no-tool-use constraint). Practical implication, now settled and standing: for any task run against a sandboxed harness or private-resource context, domain-primer prompts must include an explicit no-tool-use instruction. The primer content itself still helps when constrained."
     }
   ]
 }
