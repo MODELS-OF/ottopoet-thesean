@@ -1,0 +1,43 @@
+{
+  "schema": "model-task-evaluation.v0",
+  "haecceity": "ottopoet-thesean",
+  "updated_at": "2026-08-09T04:00:00-07:00",
+  "trials": [
+    {
+      "trial_id": "2026-08-09-001",
+      "task_category": "issue-body-triage-summary",
+      "task_description": "2-sentence plain-English PM-facing summary of a real GitHub issue body (Agents-Of/DashBOrg#7), bare task, no domain framing beyond the instruction itself.",
+      "harness": "opencode",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "partial",
+      "outcome_notes": "Captured the general gist correctly (connecting identity/data axes, no transcript storage). Missed the single most load-bearing fact (design-only, not build-authorized) and all four acceptance criteria. IMPORTANT CAVEAT, corrected same session by the Org Lead directly: this outcome was initially judged against MY OWN privileged context (this identity's full swarm/session history, including having built the actual contract this issue asked for) -- not a fair capability read. See trial 002 for the controlled comparison.",
+      "context_engineering_level": "none",
+      "latency_s": 10.96,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-002",
+      "task_category": "issue-body-triage-summary",
+      "task_description": "Same issue body, same model, same harness -- but with an explicit ~120-word domain primer added to the prompt (what 'Owner Card ID' means, why a design-only scope limit is the most important fact, that acceptance criteria must be preserved) and an explicit 4-point checklist of what the summary must state.",
+      "harness": "opencode",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "pass",
+      "outcome_notes": "Dramatic improvement over trial 001 with the identical model and harness. Correctly and explicitly stated implementation is NOT authorized (the fact trial 001 missed entirely) and preserved most acceptance criteria at reasonable specificity. Two minor remaining gaps: named the owner only generically ('the owner is responsible') rather than a concrete identifier -- plausibly a side effect of my own instruction to avoid card-glyph jargon rather than a real capability gap -- and dropped one specific acceptance criterion (thread-lineage card is not a session ID). Real, controlled A/B evidence for the exact confound context_engineering_level exists to track: same model, ~12s of added generation time, night-and-day quality difference.",
+      "context_engineering_level": "domain-primer",
+      "latency_s": 12.18,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09"
+    }
+  ],
+  "routing_conclusions": [
+    {
+      "task_category": "issue-body-triage-summary",
+      "recommended_tier": "not-yet-enough-data",
+      "based_on_trials": ["2026-08-09-001", "2026-08-09-002"],
+      "notes": "Two trials, one A/B pair, is directional not conclusive. Real, non-speculative conclusion so far: for THIS task category, a domain-primer is not optional overhead -- it changes the outcome class (partial -> pass) more than switching models or harnesses likely would. Before ever concluding 'local-model can't handle this task category,' first confirm whether the actual failure was context_engineering_level=none rather than a genuine capability ceiling. Needs several more trials (different issue shapes, and ideally a comparable domain-primer-vs-none pair for a Haiku-subagent trial too) before this graduates past 'not-yet-enough-data.'"
+    }
+  ]
+}
