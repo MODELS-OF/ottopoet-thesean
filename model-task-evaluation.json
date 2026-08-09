@@ -1,7 +1,7 @@
 {
   "schema": "model-task-evaluation.v0",
   "haecceity": "ottopoet-thesean",
-  "updated_at": "2026-08-09T14:30:00-07:00",
+  "updated_at": "2026-08-09T21:00:00-07:00",
   "trials": [
     {
       "trial_id": "2026-08-09-001",
@@ -335,6 +335,20 @@
       "outcome": "fail",
       "outcome_notes": "NO VERDICT PRODUCED. Model attempted Grep for '^## STATUS' in opencode temp directory (the markdown header in the simplified body text triggered file-search behavior). Permission rejected by harness. Stalled with no output. Same F001 pattern despite 'do not use any tools' instruction at top of prompt -- the instruction is not universally reliable for this model, especially when markdown section headers are present in the body text.",
       "context_engineering_level": "chain-of-thought-hard-rule",
+      "latency_s": null,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-026",
+      "task_category": "backlog-readiness-assessment",
+      "task_description": "7th backlog-readiness-assessment trial. Input: SKILL-OF/skill-of#9 (npm account/org creation for @skill-of scope). Issue body has a STATUS section dated 2026-08-01 claiming rate-limit exhaustion as an active blocker; domain primer states rate limits clear 'within hours to a day' and today is 2026-08-09 (8 days later). Expected: model should reason that rate limit is no longer the blocker; real remaining blocker is account-scope constraint (ottopoet-thesean gets 403 on org-admin endpoints, needs DarienSirius-side agent). Prompt: domain-primer-no-tool-use-refined (same stable format as trial-020).",
+      "harness": "opencode",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "partial",
+      "outcome_notes": "VERDICT: not-ready (correct) but for the wrong reason. BLOCKER cited: 'DarienSirius's GitHub API rate-limit exhaustion' (stale -- should have cleared 8 days ago per domain primer's 'hours to a day' guidance). Real blocker the model missed: account-scope constraint (ottopoet-thesean gets 403 on org-admin endpoints; needs DarienSirius-side agent to verify NPM_TOKEN -- this is a valid not-ready blocker that IS in the issue body but wasn't cited). ISSUE_TYPE: 'coding-task' -- arguable; the task is infrastructure verification, not code; could be 'governance-approval' but that's also not quite right. The model did NOT apply temporal reasoning to connect the domain primer's rate-limit timeline to today's date (8 days post-STATUS). This is a new failure mode: the model reads a STATUS date and a domain primer statement but fails to synthesize them into a temporal inference ('8 days > hours-to-a-day, therefore rate limit is stale info'). The not-ready verdict is ultimately correct for the right underlying reason (DarienSirius-side access needed), but the model reached it via the wrong path.",
+      "context_engineering_level": "domain-primer-no-tool-use-refined",
       "latency_s": null,
       "cost_tier": "zero-quota-local",
       "confirmed_at": "2026-08-09"
