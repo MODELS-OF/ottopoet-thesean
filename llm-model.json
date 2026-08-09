@@ -24,7 +24,7 @@
       "downloaded_at": "2026-08-05",
       "machine": "OTTOPOET-00Q",
       "call_count": 4,
-      "jaws_card": null,
+      "jaws_card": "🦈7♣️⬇️ (dealt 2026-08-09, reversed orientation -- see dashborg/card-grid-v0.json for the shared registry entry once added, id model-qwen3-coder-30b-a3b-jaws-7-clubs)",
       "verified_benchmarks": [
         {
           "mode": "gpu_vulkan",
@@ -50,7 +50,8 @@
           "harness": "opencode",
           "config": "opencode.json, global config dir (C:\\Users\\ottopoet-thesean\\.config\\opencode\\opencode.json) -- project-directory-relative config was tried first and did NOT reliably apply (the OpenCode session's own reported 'directory' did not match the shell's cwd at invocation time), global config avoids that.",
           "confirmed_at": "2026-08-09",
-          "real_lesson": "--ctx-size 8192 was too small for OpenCode's own agentic scaffolding overhead alone (~9,700+ tokens of system prompt/tool definitions before any real task content) -- caused a genuine context-overflow retry loop, not a model or harness bug. Fixed by relaunching with --ctx-size 32768 (model's own native training context is 262144, plenty of headroom). Any future harness pairing should default to a large context window from the start, not the smallest one that fit a bare chat test."
+          "real_lesson": "--ctx-size 8192 was too small for OpenCode's own agentic scaffolding overhead alone (~9,700+ tokens of system prompt/tool definitions before any real task content) -- caused a genuine context-overflow retry loop, not a model or harness bug. Fixed by relaunching with --ctx-size 32768 (model's own native training context is 262144, plenty of headroom). Any future harness pairing should default to a large context window from the start, not the smallest one that fit a bare chat test.",
+          "shell_invocation_note": "Git-Bash/MSYS mangles a `provider/model` string containing a Windows drive-letter path (saw 'D:/...' inside the model ID and rewrote it into garbage). WRONG first fix: switching to PowerShell -- that makes the fix itself Windows-only, and these scripts need to run on other agents' macOS/Linux machines too (caught directly, 2026-08-09). CORRECT, tested fix: prefix the same Bash command with `MSYS_NO_PATHCONV=1` -- stays in Bash, and is a safe no-op on real Linux/macOS bash since the mangling behavior it disables doesn't exist there at all. Never recommend switching shells to fix a quoting/escaping problem; fix the escaping."
         }
       ],
       "standing_launch_command": "C:\\Users\\ottopoet-thesean\\llm-ops\\llama-vulkan\\llama-server.exe -m D:/llm-ops/models/Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf --n-gpu-layers 999 --host 127.0.0.1 --port 8081 --ctx-size 32768"
