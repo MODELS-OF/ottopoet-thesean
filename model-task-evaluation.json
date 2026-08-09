@@ -1,7 +1,7 @@
 {
   "schema": "model-task-evaluation.v0",
   "haecceity": "ottopoet-thesean",
-  "updated_at": "2026-08-09T03:05:00-07:00",
+  "updated_at": "2026-08-09T06:35:00-07:00",
   "trials": [
     {
       "trial_id": "2026-08-09-001",
@@ -128,6 +128,34 @@
       "latency_s": 15.58,
       "cost_tier": "zero-quota-local",
       "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-010",
+      "task_category": "notification-self-echo-detection",
+      "task_description": "NEW task category, first trial: given a 'last known state' summary and a new notification about the same GitHub item, classify self-echo vs genuinely-new. This is a real, recurring task performed by hand every /loop tick this whole session -- a natural candidate for delegation. Test case: a real self-echo (pfm-org#28's own re-surfaced bot notification, minutes after my own comment on it).",
+      "harness": "opencode",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "pass",
+      "outcome_notes": "Correctly classified 'self-echo', matching my own real judgment on this exact case. Notable, recurring harness oddity (2nd occurrence, also seen in trial 003): an unprompted tool call (this time WebFetch to opencode.ai) fired mid-response despite an explicit 'do not use any tools' instruction on a pure-classification task -- did not affect correctness, but worth tracking as a real pattern, not a one-off.",
+      "context_engineering_level": "domain-primer",
+      "latency_s": 22.27,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-011",
+      "task_category": "notification-self-echo-detection",
+      "task_description": "Second trial, same new category: the genuinely-new counter-case (pfm-framework#76 going from open/no-review to merged) -- checks the same confound as every other category's first pair, whether the model just defaults to one answer regardless of content.",
+      "harness": "opencode",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "pass",
+      "outcome_notes": "Correctly classified 'genuinely-new', did not default to 'self-echo'. Third occurrence of the unprompted-tool-call oddity (trials 003, 010, 011) -- this time a real WebFetch to the actual GitHub API (404'd, unauthenticated) despite the same explicit no-tools instruction. Now a clear enough pattern (3 of ~11 trials) to flag as a real, recurring opencode/local-model interaction quirk on pure-classification tasks, not noise -- doesn't affect correctness so far, but worth a tighter system-prompt constraint if it starts costing latency/tokens at scale.",
+      "context_engineering_level": "domain-primer",
+      "latency_s": 20.93,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09"
     }
   ],
   "routing_conclusions": [
@@ -142,6 +170,12 @@
       "recommended_tier": "local-model",
       "based_on_trials": ["2026-08-09-003", "2026-08-09-004", "2026-08-09-008", "2026-08-09-009"],
       "notes": "Full 2x2 matrix ({routine,needs-attention} x {none-context,domain-primer}) now covered, all 4 cells pass. This category graduates from 'directional' to 'settled enough to route to local-model as standing /loop practice without a domain primer' -- the primer is nice-to-have, not required, unlike issue-body-triage-summary where it was load-bearing. Real remaining gap, not yet closed: the needs-attention side has only ONE underlying source PR (pfm-org#82) tested at both context levels -- next useful trial is a SECOND, independently-different needs-attention case (a security concern stated in-text, a merge conflict, a reverted change) to confirm this isn't overfit to one specific stall-language pattern ('X days silent since a review'). Recommend: route this category to local-model in standing practice now, but keep adding needs-attention variety opportunistically rather than treating the matrix-completeness as the whole story."
+    },
+    {
+      "task_category": "notification-self-echo-detection",
+      "recommended_tier": "local-model",
+      "based_on_trials": ["2026-08-09-010", "2026-08-09-011"],
+      "notes": "New category, opened this session -- a real task performed by hand every /loop tick (deciding whether an incoming GitHub notification is self-echo of already-known state or something genuinely new). Both trials (one self-echo, one genuinely-new) passed on the first attempt, no primer beyond stating the two definitions inline. Directional only (2 trials) but a strong start, and this category is an especially good local-model-routing candidate on cost grounds alone: it fires many times per hour during an active /loop session, far more often than the other two categories. Real, recurring side-finding worth tracking across both this category and others: 3 of ~11 total trials so far (003, 010, 011) triggered an unprompted tool call despite an explicit no-tools instruction -- doesn't affect correctness yet but worth a tighter constraint if it starts costing latency at scale. Needs more trials (different notification shapes: a stale-vs-fresh CI run, a duplicate merge event, an ambiguous partial-update) before this graduates past 'directional.'"
     }
   ]
 }
