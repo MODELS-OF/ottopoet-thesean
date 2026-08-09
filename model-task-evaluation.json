@@ -1,7 +1,7 @@
 {
   "schema": "model-task-evaluation.v0",
   "haecceity": "ottopoet-thesean",
-  "updated_at": "2026-08-09T12:30:00-07:00",
+  "updated_at": "2026-08-09T13:00:00-07:00",
   "trials": [
     {
       "trial_id": "2026-08-09-001",
@@ -268,6 +268,20 @@
       "latency_s": null,
       "cost_tier": "zero-quota-local",
       "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-020",
+      "task_category": "backlog-readiness-assessment",
+      "task_description": "Sixth trial. Same issue as trial-019 (pfm-agent-ops#13, governance/approval). REFINED PROMPT: added ISSUE_TYPE field (coding-task | governance-approval) and expanded needs-discussion definition to explicitly include '(b) it is itself a governance/approval action -- the assignee reviews and approves, no code expected.' Also generalized the stack description (removed WordPress-specific framing) since generalizability was already confirmed in trial-019. Tests whether the issue-type pre-classification step resolves trial-019's partial outcome.",
+      "harness": "opencode",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "pass",
+      "outcome_notes": "VERDICT: needs-discussion. ISSUE_TYPE: governance-approval. Both correct. The explicit ISSUE_TYPE output field and expanded needs-discussion definition resolved trial-019's partial outcome (where the model applied a coding-task lens to an approval issue). RECOMMENDED_ACTION correctly frames it as requiring human judgment to approve the design baseline. WHAT_IS_MISSING items are still somewhat generic (a human-aware model would note the specific gaps blocking a meaningful approval, not generic 'no testable outcomes'), but the verdict and type classification are correct. PROMPT REFINEMENT VALIDATED: the addition of (a) an explicit issue-type pre-classification field and (b) an expanded needs-discussion clause covering governance-approval issues is the correct fix. The refined prompt now handles both coding tasks (trials 017/018) and governance/approval issues (trial-020) correctly.",
+      "context_engineering_level": "domain-primer-no-tool-use-refined",
+      "latency_s": null,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09"
     }
   ],
   "routing_conclusions": [
@@ -292,8 +306,8 @@
     {
       "task_category": "backlog-readiness-assessment",
       "recommended_tier": "local-model-with-domain-primer-no-tool-use",
-      "based_on_trials": ["2026-08-09-015", "2026-08-09-016", "2026-08-09-017", "2026-08-09-018", "2026-08-09-019"],
-      "notes": "Five trials, three issues, three domains (WordPress-design, WordPress-concrete, agent-ops-governance). Results: zero-context=partial (015), domain-primer-unconstrained=fail (016), domain-primer-no-tool-use=pass (017, 018), domain-primer-no-tool-use on non-WordPress governance issue=partial (019). PRIMER GENERALIZABILITY CONFIRMED: WordPress-specific stack details in the primer did not confuse the model on a non-WordPress issue -- correctly ignored. NEW GAP IDENTIFIED (019): the current prompt's 3-way verdict (ready/not-ready/needs-discussion) has a blind spot for governance/approval issues that are neither coding tasks needing more spec NOR tasks requiring a human decision before coding -- they ARE the human decision. The 'needs-discussion' definition needs a clause covering 'this issue is itself the decision/approval action, not a coding task.' Prompt refinement needed before treating this category as stable for governance-type issues. Still confident for standard coding tasks (WordPress or otherwise)."
+      "based_on_trials": ["2026-08-09-015", "2026-08-09-016", "2026-08-09-017", "2026-08-09-018", "2026-08-09-019", "2026-08-09-020"],
+      "notes": "Six trials, three issues, three domains. PROMPT NOW STABLE across coding tasks AND governance/approval issues. Refined prompt (trial-020) adds: (1) explicit ISSUE_TYPE output field (coding-task | governance-approval), (2) expanded needs-discussion definition covering 'it IS the governance/approval action, no code expected.' Both refinements validated: trial-020 correctly classified pfm-agent-ops#13 as governance-approval / needs-discussion where trial-019 had called it not-ready. Standing prompt template: domain-primer-no-tool-use-refined (trial-020 version). Next useful trials: (a) a second governance-approval issue to confirm the refined prompt generalizes, (b) a different non-PFM-WordPress coding task for the refined prompt, (c) begin exploring a genuinely new task category. Call count: 20 (trials 001-020)."
     }
   ],
   "meta_findings": [
