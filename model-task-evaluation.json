@@ -1,7 +1,7 @@
 {
   "schema": "model-task-evaluation.v0",
   "haecceity": "ottopoet-thesean",
-  "updated_at": "2026-08-09T21:10:00-07:00",
+  "updated_at": "2026-08-09T22:00:00-07:00",
   "trials": [
     {
       "trial_id": "2026-08-09-001",
@@ -366,38 +366,100 @@
       "latency_s": 17.3,
       "cost_tier": "haiku-subagent",
       "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-027",
+      "task_category": "skill-multiharness-compliance-check",
+      "task_description": "Assess whether a set of PR additions (new env vars, cache path function, SKILL.md description, streaming JSONL reader) satisfy the multi-harness compliance requirement for a SKILL-OF/* repo. Input is a structured diff summary with named violation patterns and compliant patterns in domain primer.",
+      "harness": "direct-http",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "pass",
+      "outcome_notes": "Correctly identified all 4 violation classes: (1) CODEX_SUBAGENTS/CODEX_INSTANCE_ID_* env var prefixes, (2) codexHome()-based cache path, (3) SKILL.md description opening with Codex-specific wording. Also correctly identified 2 harness-agnostic items (cache entry validation, streaming JSONL reader). Verdict matches exactly what the Org-Lead-corrected CHANGES_REQUESTED review sent to SKILL-OF/instance-identification PR#34. Minor caveat: listed the defaultCacheFile() fallback as partially compliant then also as a violation -- but this is a labeling inconsistency, not a correctness error on the verdict. Prompt tokens: 822, completion tokens: 219.",
+      "context_engineering_level": "domain-primer",
+      "prompt_tokens": 822,
+      "completion_tokens": 219,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09",
+      "real_world_anchor": "SKILL-OF/instance-identification PR#34 -- actual PR I reviewed and gave CHANGES_REQUESTED to this session",
+      "routing_implication": "skill-multiharness-compliance-check can be routed to local model at domain-primer context level. Structured diff summary with explicit violation/compliant pattern examples is sufficient framing -- model did not miss any violation class."
     }
   ],
   "routing_conclusions": [
     {
       "task_category": "issue-body-triage-summary",
       "recommended_tier": "local-model-with-domain-primer",
-      "based_on_trials": ["2026-08-09-001", "2026-08-09-002", "2026-08-09-005", "2026-08-09-006", "2026-08-09-007"],
+      "based_on_trials": [
+        "2026-08-09-001",
+        "2026-08-09-002",
+        "2026-08-09-005",
+        "2026-08-09-006",
+        "2026-08-09-007"
+      ],
       "notes": "The missing Haiku-subagent comparison now exists (006/007, same issue as 005). Real finding: Haiku's bare/none-context baseline (006, partial) is noticeably stronger than the local model's was (001, partial-but-worse -- missed the single most load-bearing fact entirely; 006 got both core problems, just not the 'awaiting decision' framing), and the domain-primer's effect on Haiku (006->007) is real but smaller in magnitude than on the local model (001->002). Net routing conclusion, still local-model-with-domain-primer for cost reasons: once a domain primer is supplied either way, local-model (zero quota) and Haiku-subagent (cheap quota) both reach 'pass' on this category -- so for a task this cheap to prime correctly, prefer local-model first and only escalate to Haiku-subagent if a specific issue shape turns out to need more inference quality than the local model can deliver even with a good primer (not yet observed). Sample size still small (2-3 per tier) -- keep adding different issue shapes before treating this as fully settled."
     },
     {
       "task_category": "routine-pr-merge-triage",
       "recommended_tier": "local-model",
-      "based_on_trials": ["2026-08-09-003", "2026-08-09-004", "2026-08-09-008", "2026-08-09-009"],
+      "based_on_trials": [
+        "2026-08-09-003",
+        "2026-08-09-004",
+        "2026-08-09-008",
+        "2026-08-09-009"
+      ],
       "notes": "Full 2x2 matrix ({routine,needs-attention} x {none-context,domain-primer}) now covered, all 4 cells pass. This category graduates from 'directional' to 'settled enough to route to local-model as standing /loop practice without a domain primer' -- the primer is nice-to-have, not required, unlike issue-body-triage-summary where it was load-bearing. Real remaining gap, not yet closed: the needs-attention side has only ONE underlying source PR (pfm-org#82) tested at both context levels -- next useful trial is a SECOND, independently-different needs-attention case (a security concern stated in-text, a merge conflict, a reverted change) to confirm this isn't overfit to one specific stall-language pattern ('X days silent since a review'). Recommend: route this category to local-model in standing practice now, but keep adding needs-attention variety opportunistically rather than treating the matrix-completeness as the whole story."
     },
     {
       "task_category": "notification-self-echo-detection",
       "recommended_tier": "local-model",
-      "based_on_trials": ["2026-08-09-010", "2026-08-09-011", "2026-08-09-012", "2026-08-09-013", "2026-08-09-014"],
+      "based_on_trials": [
+        "2026-08-09-010",
+        "2026-08-09-011",
+        "2026-08-09-012",
+        "2026-08-09-013",
+        "2026-08-09-014"
+      ],
       "notes": "Five trials, four distinct shapes (self-echo, genuinely-new, ambiguous cache-resync, duplicate-merge-event x2 -- trial-014 was an unplanned replication of trial-013's scenario). All five pass. 'Reasonably confident' holds; the replication is a mild positive signal (shows the model handles this format reliably across independent invocations). Tool-call oddity remains at 3 of 5 trials. This category remains an especially good local-model-routing candidate on cost grounds: it fires far more often than either other category during an active /loop session."
     },
     {
       "task_category": "backlog-readiness-assessment",
       "recommended_tier": "local-model-with-domain-primer-no-tool-use",
-      "based_on_trials": ["2026-08-09-015", "2026-08-09-016", "2026-08-09-017", "2026-08-09-018", "2026-08-09-019", "2026-08-09-020"],
+      "based_on_trials": [
+        "2026-08-09-015",
+        "2026-08-09-016",
+        "2026-08-09-017",
+        "2026-08-09-018",
+        "2026-08-09-019",
+        "2026-08-09-020"
+      ],
       "notes": "Seven trials (015-020, 026), three issues, three domains. PROMPT NOW STABLE across coding tasks AND governance/approval issues. Refined prompt (trial-020) adds: (1) explicit ISSUE_TYPE output field (coding-task | governance-approval), (2) expanded needs-discussion definition covering 'it IS the governance/approval action, no code expected.' Both refinements validated: trial-020 correctly classified pfm-agent-ops#13 as governance-approval / needs-discussion where trial-019 had called it not-ready. Trial-026 identified a NEW LIMITATION: the model does NOT reliably apply temporal reasoning across domain-primer time statements + issue STATUS dates, even when both pieces ('rate limits clear in hours-to-a-day', 'STATUS last updated 2026-08-01', 'today is 2026-08-09') are all in the prompt together. The model cited a stale blocker as active. Workaround: if an issue's STATUS section is more than 24h old and mentions a transient blocker, add an explicit prompt statement like 'TEMPORAL NOTE: If a blocker in the STATUS is a transient state (rate limits, in-flight builds) and the STATUS date is more than 2 days before today, treat that blocker as likely resolved and say so explicitly.' Standing prompt template: domain-primer-no-tool-use-refined (trial-020 version). Call count: 25 (trials 001-020, 026)."
+    },
+    {
+      "conclusion_id": "skill-multiharness-compliance-check-routing",
+      "task_category": "skill-multiharness-compliance-check",
+      "conclusion": "Route to local model (Qwen3-Coder-30B) at domain-primer context level. Pattern-matching on harness-specific env var prefixes, path functions, and description text is within this model capability class. Structured diff with explicit violation/compliant examples is the right framing.",
+      "routing_recommendation": {
+        "primary": "local-model",
+        "fallback": "haiku-subagent",
+        "use_sonnet_when": "PR involves subtle or novel harness assumptions not covered by the explicit example patterns"
+      },
+      "trial_evidence": [
+        "2026-08-09-027"
+      ],
+      "confidence": "medium",
+      "notes": "One trial. Sufficient for initial routing given clean PASS with 0 missed violations. Re-evaluate if a future case involves ambiguous harness-specificity (e.g., a env var that is coincidentally named like a harness but is actually generic)."
     }
   ],
   "issue_body_staleness_check_routing": {
     "task_category": "issue-body-staleness-check",
     "recommended_tier": "haiku-subagent-or-sonnet",
-    "based_on_trials": ["2026-08-09-021", "2026-08-09-022", "2026-08-09-023", "2026-08-09-024", "2026-08-09-025"],
+    "based_on_trials": [
+      "2026-08-09-021",
+      "2026-08-09-022",
+      "2026-08-09-023",
+      "2026-08-09-024",
+      "2026-08-09-025"
+    ],
     "validation_trial": "2026-08-09-025",
     "notes": "Four consecutive local-model failures on the same input (pfm-webops#32, body claims #99 open, Comment 3 resolves it). Failure modes: (1) gestalt read ignoring prompt structure (021, 022), (2) correct intermediate reasoning but wrong conclusion -- 'last-mile reasoning failure' (023), (3) tool-use stall on markdown header triggering Grep attempt (024). HAIKU VALIDATION CONFIRMED (trial-025, 2026-08-09): Haiku subagent passed on first attempt with the same prompt. VERDICT: partially-stale, both stale claims correctly identified ('One real gap remains...#99' contradicted by Comment 3; 'needs a scoped PFM_WEBOPS_SECRETS_WRITE_TOKEN that doesn't exist yet' contradicted by Comment 3), RECOMMENDED_ACTION concrete and actionable ('Prepend a STATUS UPDATE section stating #99 is resolved'). Latency 17.3s. ROUTING CONCLUSION FINAL: haiku-subagent for this task category. Local model is a genuine capability ceiling here, not prompt-engineering fixable. Haiku handles it cleanly and is much cheaper than Sonnet."
   },
@@ -405,8 +467,16 @@
     {
       "finding_id": "2026-08-09-F001",
       "title": "Domain primer can WORSEN performance when it primes tool-use that then hits access walls",
-      "observed_in_trials": ["2026-08-09-016"],
-      "contrasts_with_trials": ["2026-08-09-001", "2026-08-09-002", "2026-08-09-005", "2026-08-09-006", "2026-08-09-007"],
+      "observed_in_trials": [
+        "2026-08-09-016"
+      ],
+      "contrasts_with_trials": [
+        "2026-08-09-001",
+        "2026-08-09-002",
+        "2026-08-09-005",
+        "2026-08-09-006",
+        "2026-08-09-007"
+      ],
       "description": "For issue-body-triage-summary, domain primer was consistently load-bearing (001->002: partial->pass). For backlog-readiness-assessment, a rich stack-specific domain primer WITHOUT a no-tool-use constraint (016) caused the model to attempt live-system verification (Grep, Glob, WebFetch, skill loading, mkdir), hit permission walls, and stall -- producing no output, worse than the zero-context run (015, partial). MECHANISM NOW CONFIRMED via trial-017: same domain primer + explicit 'do not use any tools -- reason only from the text below' instruction → clean run, zero tool calls, pass-quality verdict. The failure was NOT the primer content itself but the combination of (primer naming live-verifiable systems) + (absence of no-tool-use constraint). Practical implication, now settled and standing: for any task run against a sandboxed harness or private-resource context, domain-primer prompts must include an explicit no-tool-use instruction. The primer content itself still helps when constrained."
     }
   ]
