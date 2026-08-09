@@ -1,7 +1,7 @@
 {
   "schema": "model-task-evaluation.v0",
   "haecceity": "ottopoet-thesean",
-  "updated_at": "2026-08-09T02:40:00-07:00",
+  "updated_at": "2026-08-09T03:05:00-07:00",
   "trials": [
     {
       "trial_id": "2026-08-09-001",
@@ -114,6 +114,20 @@
       "latency_s": 17.16,
       "cost_tier": "zero-quota-local",
       "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-009",
+      "task_category": "routine-pr-merge-triage",
+      "task_description": "The last empty cell in the 2x2 (needs-attention x none-context) -- same PR/comment as trial 004 (pfm-org#82's stall), but with the domain primer stripped, matching trial 008's bare style. Completes the full matrix for this category.",
+      "harness": "opencode",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "pass",
+      "outcome_notes": "Correctly classified 'needs-attention' with zero context primer, naming the actual signal (silence since a review, unresolved issues) -- did not default to 'routine' regardless of content, the exact failure mode this whole line of trials was checking for. All 4 cells of the {routine,needs-attention} x {none,primer} matrix now pass for this category (003, 004, 008, 009) -- strongest single-category result so far in this evaluation practice. Caveat worth keeping: the needs-attention cases (004, 009) reuse the SAME underlying PR/comment (pfm-org#82) at both context levels -- a clean within-issue A/B, but not yet a second independent needs-attention case. Sample-size caveat stands regardless of the matrix completeness.",
+      "context_engineering_level": "none",
+      "latency_s": 15.58,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09"
     }
   ],
   "routing_conclusions": [
@@ -126,8 +140,8 @@
     {
       "task_category": "routine-pr-merge-triage",
       "recommended_tier": "local-model",
-      "based_on_trials": ["2026-08-09-003", "2026-08-09-004", "2026-08-09-008"],
-      "notes": "Three trials: one routine (domain-primer), one needs-attention (domain-primer), one routine (NO primer) -- all three correctly classified. Trial 008 closes the none-vs-primer gap this category was missing (unlike issue-body-triage-summary, where none-context genuinely failed). Emerging, not-yet-firm pattern: this category's binary classification seems to tolerate a bare prompt fine, while nuanced free-text summarization needed a primer to succeed at all -- plausible explanation is that 'routine vs needs-attention' is closer to the model's own pretraining distribution of natural judgment calls than a structured multi-point summary format is. Still want a none-context needs-attention trial (the one remaining empty cell in the 2x2: {routine,needs-attention} x {none,primer}) before calling this fully settled, and a few more needs-attention cases with different failure shapes (a security concern stated in-text, a merge conflict, a reverted change)."
+      "based_on_trials": ["2026-08-09-003", "2026-08-09-004", "2026-08-09-008", "2026-08-09-009"],
+      "notes": "Full 2x2 matrix ({routine,needs-attention} x {none-context,domain-primer}) now covered, all 4 cells pass. This category graduates from 'directional' to 'settled enough to route to local-model as standing /loop practice without a domain primer' -- the primer is nice-to-have, not required, unlike issue-body-triage-summary where it was load-bearing. Real remaining gap, not yet closed: the needs-attention side has only ONE underlying source PR (pfm-org#82) tested at both context levels -- next useful trial is a SECOND, independently-different needs-attention case (a security concern stated in-text, a merge conflict, a reverted change) to confirm this isn't overfit to one specific stall-language pattern ('X days silent since a review'). Recommend: route this category to local-model in standing practice now, but keep adding needs-attention variety opportunistically rather than treating the matrix-completeness as the whole story."
     }
   ]
 }
