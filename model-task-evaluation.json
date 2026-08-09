@@ -1,7 +1,7 @@
 {
   "schema": "model-task-evaluation.v0",
   "haecceity": "ottopoet-thesean",
-  "updated_at": "2026-08-09T22:45:00-07:00",
+  "updated_at": "2026-08-09T23:05:00-07:00",
   "trials": [
     {
       "trial_id": "2026-08-09-001",
@@ -417,6 +417,22 @@
       "confirmed_at": "2026-08-09",
       "real_world_anchor": "SKILL-OF/instance-identification PR#34 SKILL.md first sentence is SKILL-1 in this trial",
       "routing_implication": "skill-description-quality-check routes to local model at domain-primer level. PASS on first trial. Queue challenger trial via 📎8♣️ (inner-swarm-queue.jsonl) to probe edge cases."
+    },
+    {
+      "trial_id": "2026-08-09-030",
+      "task_category": "skill-description-quality-check",
+      "task_description": "Adversarial challenger variant of trial-029. 4 edge-case skill descriptions: (1) harness-specific via hardcoded path ~/.claude/ (not harness name), (2) clean generic case, (3) clean generic case, (4) description is generic but purpose reveals Codex-only implementation (contradictory). Designed by 🔱4♦️ as inner-swarm challenger since 📎8♣️ had not yet processed the queued task.",
+      "harness": "direct-http",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "partial",
+      "outcome_notes": "SKILL-1: rated too-vague (WRONG — should be harness-specific; model missed ~/.claude/ as a Claude Code-specific path, focused on invocation ambiguity instead). SKILL-2: good (CORRECT). SKILL-3: good (CORRECT). SKILL-4: harness-specific (CORRECT verdict, PARTIAL reasoning — cited purpose field not description text; should have been contradictory since description is generic but implementation is harness-locked). 3/4 correct overall. Prompt tokens: 556, completion tokens: 145.",
+      "context_engineering_level": "domain-primer",
+      "prompt_tokens": 556,
+      "completion_tokens": 145,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09",
+      "routing_implication": "skill-description-quality-check: local model catches harness-name violations (trial-029, SKILL-1 Codex in text; trial-030, SKILL-4 from purpose) but misses harness-specific PATHS (trial-030, SKILL-1 ~/.claude/). Routing remains local-model for name-based violations; escalate to haiku-subagent when the violation is a filesystem path or an implementation/description mismatch (contradictory case)."
     }
   ],
   "routing_conclusions": [
@@ -486,11 +502,12 @@
     },
     {
       "task_category": "skill-description-quality-check",
-      "recommended_tier": "local-model",
+      "recommended_tier": "local-model (name-based violations) / haiku-subagent (path-based or contradictory violations)",
       "based_on_trials": [
-        "2026-08-09-029"
+        "2026-08-09-029",
+        "2026-08-09-030"
       ],
-      "notes": "One trial PASS. Correctly rates harness-specific vs good across 4 real SKILL.md first sentences. Challenger trial queued for 📎8♣️ to probe false-positive/negative edge cases before finalizing."
+      "notes": "One trial PASS. Correctly rates harness-specific vs good across 4 real SKILL.md first sentences. Challenger trial queued for 📎8♣️ to probe false-positive/negative edge cases before finalizing. Trial-030 PARTIAL: model misses harness-specific PATHS (hardcoded ~/.claude/) and contradictory cases (generic description hiding harness-locked implementation). Route path-based and contradictory cases to haiku-subagent."
     }
   ],
   "issue_body_staleness_check_routing": {
