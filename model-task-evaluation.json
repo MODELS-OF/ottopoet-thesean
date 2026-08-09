@@ -1,7 +1,7 @@
 {
   "schema": "model-task-evaluation.v0",
   "haecceity": "ottopoet-thesean",
-  "updated_at": "2026-08-09T04:00:00-07:00",
+  "updated_at": "2026-08-08T22:00:00-07:00",
   "trials": [
     {
       "trial_id": "2026-08-09-001",
@@ -44,6 +44,20 @@
       "latency_s": null,
       "cost_tier": "zero-quota-local",
       "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-004",
+      "task_category": "routine-pr-merge-triage",
+      "task_description": "Same classifier task/format as trial 003, but this time on a real GENUINELY-STALLED PR (pfm-org#82: title + latest comment, which itself states '~1.5 days silent' after a repeated CHANGES_REQUESTED round and explicitly asks whether the PR should be closed/re-scoped) -- the specific 'needs-attention' counter-case trial 003's own routing_conclusions flagged as still missing.",
+      "harness": "opencode",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "pass",
+      "outcome_notes": "Correctly classified 'needs-attention' (not a default-to-routine result) with a sound one-sentence reason naming the actual signal (silence since a review request, open question about scope/closure) -- matching my own real judgment on this exact PR. No stray tool calls this time (unlike trial 003's one unprompted Grep), for whatever that's worth on a sample size of two. Note: the first invocation attempt used a wrong model-id string (`local/qwen3-coder-30b`, not a real configured provider/model) and opencode returned a generic 'UnknownError' rather than a clear 'model not found' -- a harness/config-clarity gap worth remembering, not a model capability finding. Retried with the correct `llama-server/D:/llm-ops/models/Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf` id from opencode.json and it worked cleanly.",
+      "context_engineering_level": "domain-primer",
+      "latency_s": 19.51,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09"
     }
   ],
   "routing_conclusions": [
@@ -56,8 +70,8 @@
     {
       "task_category": "routine-pr-merge-triage",
       "recommended_tier": "local-model",
-      "based_on_trials": ["2026-08-09-003"],
-      "notes": "One trial, directional. First real success for this task category: this is close to the exact judgment I make many times per /loop tick already ('routine merge, no action needed') -- if this holds across more trials, this specific category is a strong, low-risk candidate to route to local-model as standing practice, freeing Sonnet-serial capacity for the ticks that actually need it. Needs several more trials (a real 'needs-attention' case, not just routine ones, to confirm it doesn't just default to 'routine' regardless of content) before treating this as settled."
+      "based_on_trials": ["2026-08-09-003", "2026-08-09-004"],
+      "notes": "Two trials, one routine + one genuinely needs-attention, both correctly classified -- the specific confound trial 003 flagged (does it just default to 'routine' regardless of content?) is now directly addressed: it does not, it changed its answer correctly when the input actually warranted it. Still a small sample (2), and both used context_engineering_level=domain-primer, so this doesn't yet say anything about the none-context case for this category. Promoting from 'one trial, directional' but not yet calling this fully settled -- would want a few more needs-attention cases with different failure shapes (a security concern stated in-text, a merge conflict, a reverted change) before routing this category to local-model unsupervised in the standing /loop practice."
     }
   ]
 }
