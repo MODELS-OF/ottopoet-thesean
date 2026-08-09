@@ -1,7 +1,7 @@
 {
   "schema": "model-task-evaluation.v0",
   "haecceity": "ottopoet-thesean",
-  "updated_at": "2026-08-09T21:00:00-07:00",
+  "updated_at": "2026-08-09T21:10:00-07:00",
   "trials": [
     {
       "trial_id": "2026-08-09-001",
@@ -391,7 +391,7 @@
       "task_category": "backlog-readiness-assessment",
       "recommended_tier": "local-model-with-domain-primer-no-tool-use",
       "based_on_trials": ["2026-08-09-015", "2026-08-09-016", "2026-08-09-017", "2026-08-09-018", "2026-08-09-019", "2026-08-09-020"],
-      "notes": "Six trials (015-020), three issues, three domains. PROMPT NOW STABLE across coding tasks AND governance/approval issues. Refined prompt (trial-020) adds: (1) explicit ISSUE_TYPE output field (coding-task | governance-approval), (2) expanded needs-discussion definition covering 'it IS the governance/approval action, no code expected.' Both refinements validated: trial-020 correctly classified pfm-agent-ops#13 as governance-approval / needs-discussion where trial-019 had called it not-ready. Standing prompt template: domain-primer-no-tool-use-refined (trial-020 version). Next useful trials: (a) a second governance-approval issue to confirm the refined prompt generalizes, (b) a different non-PFM-WordPress coding task for the refined prompt, (c) begin exploring a genuinely new task category. Call count: 20 (trials 001-020)."
+      "notes": "Seven trials (015-020, 026), three issues, three domains. PROMPT NOW STABLE across coding tasks AND governance/approval issues. Refined prompt (trial-020) adds: (1) explicit ISSUE_TYPE output field (coding-task | governance-approval), (2) expanded needs-discussion definition covering 'it IS the governance/approval action, no code expected.' Both refinements validated: trial-020 correctly classified pfm-agent-ops#13 as governance-approval / needs-discussion where trial-019 had called it not-ready. Trial-026 identified a NEW LIMITATION: the model does NOT reliably apply temporal reasoning across domain-primer time statements + issue STATUS dates, even when both pieces ('rate limits clear in hours-to-a-day', 'STATUS last updated 2026-08-01', 'today is 2026-08-09') are all in the prompt together. The model cited a stale blocker as active. Workaround: if an issue's STATUS section is more than 24h old and mentions a transient blocker, add an explicit prompt statement like 'TEMPORAL NOTE: If a blocker in the STATUS is a transient state (rate limits, in-flight builds) and the STATUS date is more than 2 days before today, treat that blocker as likely resolved and say so explicitly.' Standing prompt template: domain-primer-no-tool-use-refined (trial-020 version). Call count: 25 (trials 001-020, 026)."
     }
   ],
   "issue_body_staleness_check_routing": {
