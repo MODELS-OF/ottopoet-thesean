@@ -58,14 +58,28 @@
       "latency_s": 19.51,
       "cost_tier": "zero-quota-local",
       "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-005",
+      "task_category": "issue-body-triage-summary",
+      "task_description": "A different, denser issue shape from trial 002 (pfm-org#95: a two-part technical root-cause report -- a masking bug plus a separate idempotency gap -- explicitly flagged as awaiting an architectural decision, not a quick patch), same domain-primer discipline (state what a good summary MUST capture, explicitly call out what omitting would make misleading).",
+      "harness": "opencode",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "pass",
+      "outcome_notes": "Correctly identified BOTH distinct problems by name (masking bug + re-run/idempotency gap) and correctly stated it needs an architectural decision rather than a one-line fix -- both of the two things the primer flagged as make-or-break. Minor imprecision: phrased the second problem as the re-run gap 'causing failures' rather than the more exact 'silently masking failures on re-run' -- close but not perfectly precise. This is the first issue-body-triage-summary trial on genuinely different subject matter than trial 001/002's single issue, which is the real gap trial 002's routing_conclusions flagged -- confirms the domain-primer approach's benefit generalizes across issue shapes, not just this one specific issue.",
+      "context_engineering_level": "domain-primer",
+      "latency_s": 10.82,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09"
     }
   ],
   "routing_conclusions": [
     {
       "task_category": "issue-body-triage-summary",
-      "recommended_tier": "not-yet-enough-data",
-      "based_on_trials": ["2026-08-09-001", "2026-08-09-002"],
-      "notes": "Two trials, one A/B pair, is directional not conclusive. Real, non-speculative conclusion so far: for THIS task category, a domain-primer is not optional overhead -- it changes the outcome class (partial -> pass) more than switching models or harnesses likely would. Before ever concluding 'local-model can't handle this task category,' first confirm whether the actual failure was context_engineering_level=none rather than a genuine capability ceiling. Needs several more trials (different issue shapes, and ideally a comparable domain-primer-vs-none pair for a Haiku-subagent trial too) before this graduates past 'not-yet-enough-data.'"
+      "recommended_tier": "local-model-with-domain-primer",
+      "based_on_trials": ["2026-08-09-001", "2026-08-09-002", "2026-08-09-005"],
+      "notes": "Promoted from 'not-yet-enough-data': trial 005 confirms the domain-primer effect isn't a one-issue fluke -- a genuinely different, denser two-part issue was also summarized correctly (both distinct problems named, correctly flagged as awaiting a decision rather than a quick fix) with the same primer discipline (state what MUST be captured, name what omitting would make misleading). Still only local-model tested -- no comparable Haiku-subagent domain-primer-vs-none pair exists yet, so this says 'local-model, with a domain primer, works for this category' but not yet 'local-model beats or matches Haiku-subagent for this category.' The qualifier in the recommended_tier is deliberate: context_engineering_level=none should not be assumed safe for this category based on trial 001's single none-context failure -- always pair with a primer."
     },
     {
       "task_category": "routine-pr-merge-triage",
