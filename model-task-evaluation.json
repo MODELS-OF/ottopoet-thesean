@@ -1,7 +1,7 @@
 {
   "schema": "model-task-evaluation.v0",
   "haecceity": "ottopoet-thesean",
-  "updated_at": "2026-08-09T13:45:00-07:00",
+  "updated_at": "2026-08-09T14:30:00-07:00",
   "trials": [
     {
       "trial_id": "2026-08-09-001",
@@ -338,6 +338,20 @@
       "latency_s": null,
       "cost_tier": "zero-quota-local",
       "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-025",
+      "task_category": "issue-body-staleness-check",
+      "task_description": "Fifth trial, Haiku validation. Same issue (pfm-webops#32) and same prompt format as trial-022 (3-step HOW_TO_ASSESS_STALENESS with explicit steps). Model tier: haiku-subagent via Agent tool. Purpose: validate routing conclusion from trials 021-024 (local model is a capability ceiling for this category; predicted haiku can do it).",
+      "harness": "claude-agent-tool",
+      "model_tier": "haiku-subagent",
+      "model_id": "claude-haiku-4-5-20251001",
+      "outcome": "pass",
+      "outcome_notes": "VERDICT: partially-stale. Correct. Identified both stale claims exactly right: (1) 'One real gap remains, tracked separately in #99' contradicted by Comment 3; (2) 'needs a scoped PFM_WEBOPS_SECRETS_WRITE_TOKEN that doesn't exist yet' contradicted by Comment 3. RECOMMENDED_ACTION was concrete and immediately actionable ('Prepend a STATUS UPDATE section stating #99 is resolved'). Zero tool calls. Latency: 17.3s. ROUTING CONCLUSION VALIDATED: local model fails this category (4 consecutive fails, trials 021-024); haiku passes on first try with the same prompt. This is the clearest cross-tier capability boundary found in this eval set so far -- the task requires comparing specific claims across two text sections and drawing a correct logical conclusion, which the local model could not do reliably at any prompt complexity level.",
+      "context_engineering_level": "domain-primer",
+      "latency_s": 17.3,
+      "cost_tier": "haiku-subagent",
+      "confirmed_at": "2026-08-09"
     }
   ],
   "routing_conclusions": [
@@ -369,8 +383,9 @@
   "issue_body_staleness_check_routing": {
     "task_category": "issue-body-staleness-check",
     "recommended_tier": "haiku-subagent-or-sonnet",
-    "based_on_trials": ["2026-08-09-021", "2026-08-09-022", "2026-08-09-023", "2026-08-09-024"],
-    "notes": "Four consecutive failures on the same input (pfm-webops#32, body claims #99 open, Comment 3 resolves it). Failure modes: (1) gestalt read ignoring prompt structure (021, 022), (2) correct intermediate reasoning but wrong conclusion -- 'last-mile reasoning failure' (023), (3) tool-use stall on markdown header triggering Grep attempt (024). The task requires: identify open claims in body, compare against comments, correctly conclude body is stale if any claim is resolved. The model can do step 1 and 2 separately but cannot reliably connect them to a correct verdict. This is a genuine capability ceiling for Qwen3-Coder-30B at this task type, not a prompt-engineering problem (4 different approaches all failed). ROUTE TO: haiku-subagent (much cheaper than Sonnet, but likely capable of this simpler comparative-reasoning task). Do not invest more local-model trials on this category without a fundamentally different approach (e.g., a custom multi-turn conversation rather than single-prompt)."
+    "based_on_trials": ["2026-08-09-021", "2026-08-09-022", "2026-08-09-023", "2026-08-09-024", "2026-08-09-025"],
+    "validation_trial": "2026-08-09-025",
+    "notes": "Four consecutive local-model failures on the same input (pfm-webops#32, body claims #99 open, Comment 3 resolves it). Failure modes: (1) gestalt read ignoring prompt structure (021, 022), (2) correct intermediate reasoning but wrong conclusion -- 'last-mile reasoning failure' (023), (3) tool-use stall on markdown header triggering Grep attempt (024). HAIKU VALIDATION CONFIRMED (trial-025, 2026-08-09): Haiku subagent passed on first attempt with the same prompt. VERDICT: partially-stale, both stale claims correctly identified ('One real gap remains...#99' contradicted by Comment 3; 'needs a scoped PFM_WEBOPS_SECRETS_WRITE_TOKEN that doesn't exist yet' contradicted by Comment 3), RECOMMENDED_ACTION concrete and actionable ('Prepend a STATUS UPDATE section stating #99 is resolved'). Latency 17.3s. ROUTING CONCLUSION FINAL: haiku-subagent for this task category. Local model is a genuine capability ceiling here, not prompt-engineering fixable. Haiku handles it cleanly and is much cheaper than Sonnet."
   },
   "meta_findings": [
     {
