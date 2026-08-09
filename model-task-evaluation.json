@@ -1,7 +1,7 @@
 {
   "schema": "model-task-evaluation.v0",
   "haecceity": "ottopoet-thesean",
-  "updated_at": "2026-08-09T07:10:00-07:00",
+  "updated_at": "2026-08-09T07:35:00-07:00",
   "trials": [
     {
       "trial_id": "2026-08-09-001",
@@ -170,6 +170,20 @@
       "latency_s": 15.35,
       "cost_tier": "zero-quota-local",
       "confirmed_at": "2026-08-09"
+    },
+    {
+      "trial_id": "2026-08-09-013",
+      "task_category": "notification-self-echo-detection",
+      "task_description": "Fourth trial, a different real shape from 010/011/012: a duplicate-merge-event notification (the exact real pattern seen earlier this session with Agents-Of/PlayFieldMultiplier#193 -- the same merge notification re-arriving after it was already confirmed and acted on).",
+      "harness": "opencode",
+      "model_tier": "local-model",
+      "model_id": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M",
+      "outcome": "pass",
+      "outcome_notes": "Correctly classified 'self-echo'. Notably clean run: no unprompted tool call this time (10.29s, fastest of the category's 4 trials) -- confirms the tool-call oddity seen in 010/011/012 is not deterministic for this category's prompt shape, just more frequent than baseline (still 3 of 4 trials in this category so far).",
+      "context_engineering_level": "domain-primer",
+      "latency_s": 10.29,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-09"
     }
   ],
   "routing_conclusions": [
@@ -188,8 +202,8 @@
     {
       "task_category": "notification-self-echo-detection",
       "recommended_tier": "local-model",
-      "based_on_trials": ["2026-08-09-010", "2026-08-09-011", "2026-08-09-012"],
-      "notes": "Three trials now, including one genuinely hard case (012: an UPDATED-labeled event that was actually just a mergeable-status cache resync, not new activity) -- all three pass, and 012 specifically shows the model reasoning through given context rather than pattern-matching the event label, which is the real risk this category faces in production. Promoting from 'directional' to 'reasonably confident, keep sampling.' This category remains an especially good local-model-routing candidate on cost grounds: it fires far more often than either other category during an active /loop session. Recurring side-finding, now well-established (4 of ~12 total trials, 3 of them in THIS category specifically: 010/011/012): an unprompted tool call (WebFetch to opencode.ai or the GitHub API) fires despite explicit no-tools instructions, seemingly correlated with this category's specific prompt shape rather than fully random -- doesn't affect correctness so far but worth a tighter system-prompt constraint if this scales up to real production routing."
+      "based_on_trials": ["2026-08-09-010", "2026-08-09-011", "2026-08-09-012", "2026-08-09-013"],
+      "notes": "Four trials, four different real shapes (self-echo, genuinely-new, ambiguous cache-resync, duplicate-merge-event), all pass. 'Reasonably confident' holds. Tool-call oddity refined by trial 013: NOT deterministic for this category (013 ran clean, no stray tool call, fastest latency yet) -- still 3 of 4 trials, more frequent than baseline elsewhere, but not a fixed property of this prompt shape. This category remains an especially good local-model-routing candidate on cost grounds: it fires far more often than either other category during an active /loop session."
     }
   ]
 }
