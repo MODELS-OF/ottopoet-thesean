@@ -481,6 +481,22 @@
       "cost_tier": "zero-quota-local",
       "confirmed_at": "2026-08-11",
       "routing_implication": "skill-description-quality-check (contradictory sub-case): the verbatim-quote-or-good-by-default redesign is a real, worthwhile fix for the ATTRIBUTION half of trial-033s failure (2/3 previously-misattributed cases now correct) -- keep this prompt shape going forward, it strictly dominates the old one (never worse, sometimes better, and never fabricates a false justification). But it does NOT fix the DETECTION half: path-based purpose violations (~/.claude/projects/ specifically) are still missed on the hardest case. Hypothesis, not yet tested: the model may weight literal filesystem-path substrings in the purpose field less saliently than distinctive named terms like \"rollout files\" or \"cache_control\" -- both of the now-fixed cases have a unique, unusual noun phrase to latch onto, while SKILL-1s violation is a path fragment embedded in an otherwise ordinary-sounding purpose sentence. Still do not route the contradictory sub-case to local-model tier unsupervised; either design a further variant that explicitly directs attention to path-like substrings, or keep escalating this specific SKILL-1-shaped case to Haiku-subagent tier."
+    },
+    {
+      "trial_id": "2026-08-11-035",
+      "task_category": "skill-description-quality-check",
+      "task_description": "Self-directed follow-up to trial-034 (rule-10 quiet-tick initiative): explicit path-detection instruction, testing the hypothesis flagged in trial-034 that the model weights filesystem-path fragments less saliently than distinctive noun phrases when scanning the PURPOSE field.",
+      "harness": "direct-http",
+      "model_tier": "local",
+      "model_id": "qwen3-coder-30b-a3b-instruct-q4_k_m",
+      "outcome": "partial",
+      "outcome_notes": "Added an explicit step-0 instruction directing the model to scan PURPOSE for path-shaped substrings as its own sub-check, weighted equally to named-noun violations. Result: the SKILL-1 detection gap from trial-033/034 is FIXED -- SKILL-1 now correctly quotes \"~/.claude/projects/\" with field=PURPOSE. But this surfaced a distinct, more fundamental bug, not previously isolated: the model rated SKILL-1, SKILL-2, and SKILL-4 all as `harness-specific` despite field=PURPOSE on all three -- but the rubric's own definitions require `contradictory` whenever the DESCRIPTION field itself is clean and the violation is only in PURPOSE (`harness-specific` is explicitly defined as \"the DESCRIPTION ITSELF names or implies a specific harness\"). The model correctly finds the right quote and the right field now, but does not correctly map field=PURPOSE to the `contradictory` rating category -- it appears to treat \"found a violation quote in PURPOSE\" as sufficient for `harness-specific` regardless of what the DESCRIPTION field says. This may be a pre-existing bug that trial-033/034 could not observationally distinguish, since trial-034 never got the field-attribution right in the first place for SKILL-1 (its bug was field=NONE, not field=PURPOSE), and SKILL-2/4 were not independently checked against the RATING category, only against field-attribution correctness.",
+      "context_engineering_level": "domain-primer-plus-explicit-subcheck",
+      "prompt_tokens": 1239,
+      "completion_tokens": 72,
+      "cost_tier": "zero-quota-local",
+      "confirmed_at": "2026-08-12",
+      "routing_implication": "Detection mechanics (find-the-right-quote, name-the-right-field) and rating-category semantics (map field+description-state to the correct one of five labels) are separable failure modes -- fixing one does not fix the other, and a passing detection result can mask a rating-category error underneath it. Do not route the full 5-way rating decision to local-model tier unsupervised yet, even for skills where detection is now reliable: needs either a further prompt redesign that makes the field-to-rating mapping mechanical and explicit (e.g. \"if field=PURPOSE and no DESCRIPTION violation exists, the rating MUST be contradictory, never harness-specific\"), or Haiku-subagent verification specifically on the rating label rather than the quote/field pair."
     }
   ],
   "routing_conclusions": [
