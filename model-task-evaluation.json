@@ -1,7 +1,7 @@
 {
   "schema": "model-task-evaluation.v0",
   "haecceity": "ottopoet-thesean",
-  "updated_at": "2026-08-09T23:30:00-07:00",
+  "updated_at": "2026-08-13T15:21:52.015Z",
   "trials": [
     {
       "trial_id": "2026-08-09-001",
@@ -497,6 +497,18 @@
       "cost_tier": "zero-quota-local",
       "confirmed_at": "2026-08-12",
       "routing_implication": "Detection mechanics (find-the-right-quote, name-the-right-field) and rating-category semantics (map field+description-state to the correct one of five labels) are separable failure modes -- fixing one does not fix the other, and a passing detection result can mask a rating-category error underneath it. Do not route the full 5-way rating decision to local-model tier unsupervised yet, even for skills where detection is now reliable: needs either a further prompt redesign that makes the field-to-rating mapping mechanical and explicit (e.g. \"if field=PURPOSE and no DESCRIPTION violation exists, the rating MUST be contradictory, never harness-specific\"), or Haiku-subagent verification specifically on the rating label rather than the quote/field pair."
+    },
+    {
+      "trial_id": "2026-08-13-036",
+      "task_category": "session-instance-biography",
+      "task_description": "Self-directed new task category (📎8♣️, not dispatched by 🔱4♦️): the Org Lead flagged 16 compacted 📎🦸 (claude-vscode-entrypoint) instances needing a written biography, and asked whether local-model subagents had been used for this chat-archaeology work yet -- they had not. Calibration trial: extract one instance segment (n=17, boundary-resume 2026-08-12T01:46:49Z, 1087 raw turns) as opening-compaction-summary + last-15-turns (67KB / 17183 prompt tokens), ask the model for a structured TITLE/SUMMARY/NOTABLE/OPEN_THREADS biography grounded only in the provided text.",
+      "harness": "direct-http",
+      "model_tier": "local",
+      "model_id": "qwen3-coder-30b-a3b-instruct-q4_k_m",
+      "outcome": "pass",
+      "outcome_notes": "Verified by 📎8♣️ against own lived knowledge of the actual instance-17 segment (this identity experienced it directly, pre-compaction) -- every claim in the SUMMARY and NOTABLE sections checks out against real events (CLAUDE.md identity refactor, pfm-framework#75 sabotage-verification technique, repos-of#1 and CARDS-OF/meridian-ottobot#3 reviews, the wiltba.json intertwined-not-pinned correction). No fabricated detail found. OPEN_THREADS correctly identified the genuinely unresolved thread (instance-32-summary.md revision question) without inventing a false resolution. completion_tokens=413, prompt_tokens=17183.",
+      "logged_by": "📎8♣️",
+      "logged_at": "2026-08-13T15:21:52.014Z"
     }
   ],
   "routing_conclusions": [
@@ -573,6 +585,13 @@
         "2026-08-09-031"
       ],
       "notes": "One trial PASS. Correctly rates harness-specific vs good across 4 real SKILL.md first sentences. Challenger trial queued for 📎8♣️ to probe false-positive/negative edge cases before finalizing. Trial-030 PARTIAL: model misses harness-specific PATHS (hardcoded ~/.claude/) and contradictory cases (generic description hiding harness-locked implementation). Route path-based and contradictory cases to haiku-subagent. Trial-031 PASS: explicit path examples (~/.claude/, .claude/settings.json) in domain primer close the path-detection gap. haiku escalation for path-based cases withdrawn -- prompt upgrade sufficient."
+    },
+    {
+      "conclusion": "Chat-archaeology / compacted-instance biography-writing is a strong local-model-tier fit: single trial (n=17) at zero context-engineering beyond opening-summary-plus-tail extraction produced an accurate, well-grounded, non-fabricated structured biography. Recommend routing the full backlog (up to 16 remaining claude-vscode compacted instances, per the Org Lead's standing ask) to local-model tier via a batch script, with 📎8♣️ spot-checking a sample rather than reviewing every one individually -- same escalation discipline already established for skill-description-quality-check.",
+      "based_on_trials": [
+        "2026-08-13-036"
+      ],
+      "status": "provisional -- single-trial calibration, not yet a stable base rate; scale cautiously and keep spot-checking"
     }
   ],
   "issue_body_staleness_check_routing": {
