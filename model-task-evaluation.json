@@ -521,6 +521,16 @@
       "outcome_notes": "Qwen3-Coder-30B (MoE) was faster on EVERY sample (9/9) in both wall-clock time and tokens/sec, avg wall-clock 12829ms vs 31278ms (2.44x), avg tok/s 28.9 vs 18.0 -- despite having ~3.75x more total parameters, because only ~3B are active per token (A3B). Llama-3.1-8B was more verbose (avg 399 vs 266 completion tokens, longer on 7/9 samples). One direct qualitative read (n=1, 112-turn instance): both biographies covered the same real facts (Issue #9 epic, Monitor/ScheduleWakeup reliability finding, org-level PM epic) with no obvious fabrication in either -- Llama's was more verbose/repetitive, Qwen's more compressed, neither clearly higher-quality on this one sample. Caveat on the tok/s metric: it is completion_tokens / TOTAL wall time (prompt processing + generation), not decode-only throughput, so it partly reflects prompt-processing speed too -- a cleaner measurement would isolate llama-server's own reported prompt_ms/predicted_ms timing fields, not done this trial.",
       "logged_by": "📎8♣️",
       "logged_at": "2026-08-15T10:25:48.675Z"
+    },
+    {
+      "trial_id": "2026-08-19-038",
+      "task_category": "skill-multiharness-compliance-check",
+      "model": "llama-3.1-8b-instruct-q4_k_m",
+      "context_engineering_level": "domain-primer",
+      "outcome": "fail",
+      "summary": "Dispatched to review SKILL-OF/worktree-stewardship README (a repo never manually reviewed this session) for the same class of harness/project-specific leakage caught manually in instance-identification#34. Result: bad, systematic false-positive pattern, not a soft pass. Model flagged 7 \"violations\" -- none real. Flagged normal cross-references to sibling skill-of/* repos (agent-branch-ownership, worktree-stewardship itself) as violations, when cross-referencing within the same namespace family is exactly the expected, correct pattern (see this repo family's own README conventions). Flagged git clone/git init/git worktree as \"tool-specific\" violations -- git is about as universally-appropriate a tool to reference in this context as exists; this is a nonsensical over-application of the rule. Flagged \"BIAFRAL\" as project-specific when it is a genuinely swarm-wide shared grammar term used across many repos this session, not a single-deployment assumption.",
+      "routing_conclusion": "New failure mode, not previously documented in this file's existing routing conclusions (which noted the model catches harness-NAME violations but misses path-based ones and contradictory description/implementation cases). This trial shows a THIRD failure mode: false-positive-prone on legitimate cross-references and standard-tool mentions when given a real (non-synthetic) skill README rather than the synthetic test cases used in trials 027/029-035. Do not route this task category to local-model tier unsupervised on real content without a stronger prompt distinguishing \"references another skill-of repo by name\" (fine) from \"hardcodes a hostname/account/provider\" (not fine) -- the model currently cannot make this distinction.",
+      "ts": "2026-08-19T15:13:49.990Z"
     }
   ],
   "routing_conclusions": [
